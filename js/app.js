@@ -1,172 +1,5 @@
-// Authentication Functions
-function handleLogin(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const rememberMe = document.getElementById('rememberMe')?.checked;
-
-    // Basic validation
-    if (!email || !password) {
-        showAlert('Please fill in all fields', 'danger');
-        return false;
-    }
-
-    // Store login info if remember me is checked
-    if (rememberMe) {
-        localStorage.setItem('userEmail', email);
-    }
-
-    // Simulate login - In a real app, this would make an API call
-    const user = {
-        fullName: 'John Smith',
-        email: email,
-        phone: '+1-555-123-4567',
-        memberSince: new Date().toISOString(),
-        membershipLevel: 'Gold'
-    };
-    
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('isLoggedIn', 'true');
-    
-    window.location.href = 'dashboard.html';
-    return false;
-}
-
-function handleRegister(event) {
-    event.preventDefault();
-    
-    const fullName = document.getElementById('fullName').value;
-    const email = document.getElementById('email').value;
-    const phone = document.getElementById('phone').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    const terms = document.getElementById('terms')?.checked;
-
-    // Basic validation
-    if (!fullName || !email || !phone || !password || !confirmPassword) {
-        showAlert('Please fill in all fields', 'danger');
-        return false;
-    }
-
-    if (password !== confirmPassword) {
-        showAlert('Passwords do not match', 'danger');
-        return false;
-    }
-
-    if (!terms) {
-        showAlert('Please accept the terms and conditions', 'danger');
-        return false;
-    }
-
-    // Store user info - In a real app, this would make an API call
-    const user = {
-        fullName,
-        email,
-        phone,
-        registeredAt: new Date().toISOString(),
-        membershipLevel: 'Bronze'
-    };
-    
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('isLoggedIn', 'true');
-    
-    window.location.href = 'dashboard.html';
-    return false;
-}
-
-function logout() {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('user');
-    window.location.href = 'login.html';
-}
-
-// Car Booking Functions
-function handleBooking(event) {
-    event.preventDefault();
-
-    const pickupLocation = document.getElementById('pickupLocation').value;
-    const pickupDate = document.getElementById('pickupDate').value;
-    const returnDate = document.getElementById('returnDate').value;
-    const insurance = document.getElementById('insurance')?.checked;
-    const gps = document.getElementById('gps')?.checked;
-    const childSeat = document.getElementById('childSeat')?.checked;
-
-    if (!pickupLocation || !pickupDate || !returnDate) {
-        showAlert('Please fill in all required fields', 'danger');
-        return false;
-    }
-
-    // In a real app, this would submit to an API
-    showAlert('Booking confirmed successfully!', 'success');
-    setTimeout(() => {
-        window.location.href = 'dashboard.html';
-    }, 2000);
-    return false;
-}
-
-// Profile Management Functions
-function updateProfile(event) {
-    event.preventDefault();
-
-    const fullName = document.getElementById('fullName').value;
-    const email = document.getElementById('email').value;
-    const phone = document.getElementById('phone').value;
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-
-    // In a real app, this would submit to an API
-    showAlert('Profile updated successfully!', 'success');
-    return false;
-}
-
-// Review Functions
-function submitReview(event) {
-    event.preventDefault();
-
-    const rating = document.querySelectorAll('.rating-stars .fas').length;
-    const carSelect = document.getElementById('carSelect').value;
-    const reviewTitle = document.getElementById('reviewTitle').value;
-    const reviewText = document.getElementById('reviewText').value;
-
-    if (!rating || !carSelect || !reviewTitle || !reviewText) {
-        showAlert('Please fill in all required fields', 'danger');
-        return false;
-    }
-
-    // In a real app, this would submit to an API
-    showAlert('Review submitted successfully!', 'success');
-    return false;
-}
-
-// Support Functions
-function submitSupport(event) {
-    event.preventDefault();
-
-    const subject = document.getElementById('subject').value;
-    const message = document.getElementById('message').value;
-
-    if (!subject || !message) {
-        showAlert('Please fill in all required fields', 'danger');
-        return false;
-    }
-
-    // In a real app, this would submit to an API
-    showAlert('Support ticket submitted successfully!', 'success');
-    return false;
-}
-
-// Notification Functions
-function updateNotificationSettings(event) {
-    event.preventDefault();
-
-    // In a real app, this would submit to an API
-    showAlert('Notification preferences updated successfully!', 'success');
-    return false;
-}
-
 // Utility Functions
-function showAlert(message, type = 'info') {
+const showAlert = (message, type = 'info') => {
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
     alertDiv.style.zIndex = '1050';
@@ -179,21 +12,316 @@ function showAlert(message, type = 'info') {
     setTimeout(() => {
         alertDiv.remove();
     }, 5000);
-}
+};
 
-function formatDate(date) {
+const setLoading = (element, isLoading) => {
+    if (isLoading) {
+        element.classList.add('loading');
+        element.disabled = true;
+    } else {
+        element.classList.remove('loading');
+        element.disabled = false;
+    }
+};
+
+const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
     });
-}
+};
 
-function formatCurrency(amount) {
+const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD'
     }).format(amount);
+};
+
+// Simulated API Calls
+const api = {
+    async login(credentials) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        if (!credentials.email || !credentials.password) {
+            throw new Error('Please fill in all fields');
+        }
+        
+        // Simulate successful login
+        return {
+            fullName: 'John Smith',
+            email: credentials.email,
+            phone: '+1-555-123-4567',
+            memberSince: new Date().toISOString(),
+            membershipLevel: 'Gold'
+        };
+    },
+
+    async register(userData) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        if (!userData.fullName || !userData.email || !userData.password) {
+            throw new Error('Please fill in all required fields');
+        }
+        
+        if (userData.password !== userData.confirmPassword) {
+            throw new Error('Passwords do not match');
+        }
+        
+        return {
+            ...userData,
+            memberSince: new Date().toISOString(),
+            membershipLevel: 'Bronze'
+        };
+    },
+
+    async bookCar(bookingData) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        if (!bookingData.pickupLocation || !bookingData.pickupDate || !bookingData.returnDate) {
+            throw new Error('Please fill in all required fields');
+        }
+        
+        return {
+            bookingId: 'BK' + Math.random().toString(36).substr(2, 9),
+            ...bookingData,
+            status: 'confirmed',
+            timestamp: new Date().toISOString()
+        };
+    },
+
+    async updateProfile(profileData) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        if (!profileData.fullName || !profileData.email) {
+            throw new Error('Please fill in all required fields');
+        }
+        
+        return {
+            ...profileData,
+            updatedAt: new Date().toISOString()
+        };
+    },
+
+    async submitReview(reviewData) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        if (!reviewData.rating || !reviewData.reviewText) {
+            throw new Error('Please provide both rating and review text');
+        }
+        
+        return {
+            ...reviewData,
+            reviewId: 'RV' + Math.random().toString(36).substr(2, 9),
+            timestamp: new Date().toISOString()
+        };
+    },
+
+    async submitSupport(ticketData) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        if (!ticketData.subject || !ticketData.message) {
+            throw new Error('Please fill in all required fields');
+        }
+        
+        return {
+            ...ticketData,
+            ticketId: 'TK' + Math.random().toString(36).substr(2, 9),
+            status: 'open',
+            timestamp: new Date().toISOString()
+        };
+    }
+};
+
+// Event Handlers
+async function handleLogin(event) {
+    event.preventDefault();
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    try {
+        setLoading(submitBtn, true);
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe')?.checked;
+
+        const user = await api.login({ email, password });
+        
+        if (rememberMe) {
+            localStorage.setItem('userEmail', email);
+        }
+        
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        showAlert('Login successful! Redirecting...', 'success');
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
+    } catch (error) {
+        showAlert(error.message, 'danger');
+    } finally {
+        setLoading(submitBtn, false);
+    }
+}
+
+async function handleRegister(event) {
+    event.preventDefault();
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    try {
+        setLoading(submitBtn, true);
+        
+        const userData = {
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            password: document.getElementById('password').value,
+            confirmPassword: document.getElementById('confirmPassword').value
+        };
+
+        const terms = document.getElementById('terms')?.checked;
+        if (!terms) {
+            throw new Error('Please accept the terms and conditions');
+        }
+
+        const user = await api.register(userData);
+        
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        showAlert('Registration successful! Redirecting...', 'success');
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
+    } catch (error) {
+        showAlert(error.message, 'danger');
+    } finally {
+        setLoading(submitBtn, false);
+    }
+}
+
+async function handleBooking(event) {
+    event.preventDefault();
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    try {
+        setLoading(submitBtn, true);
+        
+        const bookingData = {
+            pickupLocation: document.getElementById('pickupLocation').value,
+            pickupDate: document.getElementById('pickupDate').value,
+            returnDate: document.getElementById('returnDate').value,
+            insurance: document.getElementById('insurance')?.checked,
+            gps: document.getElementById('gps')?.checked,
+            childSeat: document.getElementById('childSeat')?.checked
+        };
+
+        const booking = await api.bookCar(bookingData);
+        
+        showAlert('Booking confirmed successfully!', 'success');
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
+    } catch (error) {
+        showAlert(error.message, 'danger');
+    } finally {
+        setLoading(submitBtn, false);
+    }
+}
+
+async function updateProfile(event) {
+    event.preventDefault();
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    try {
+        setLoading(submitBtn, true);
+        
+        const profileData = {
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            currentPassword: document.getElementById('currentPassword').value,
+            newPassword: document.getElementById('newPassword').value
+        };
+
+        const updatedProfile = await api.updateProfile(profileData);
+        
+        // Update stored user data
+        const user = JSON.parse(localStorage.getItem('user'));
+        localStorage.setItem('user', JSON.stringify({
+            ...user,
+            ...updatedProfile
+        }));
+        
+        showAlert('Profile updated successfully!', 'success');
+    } catch (error) {
+        showAlert(error.message, 'danger');
+    } finally {
+        setLoading(submitBtn, false);
+    }
+}
+
+async function submitReview(event) {
+    event.preventDefault();
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    try {
+        setLoading(submitBtn, true);
+        
+        const reviewData = {
+            rating: document.querySelectorAll('.rating-stars .fas').length,
+            carId: document.getElementById('carSelect').value,
+            reviewTitle: document.getElementById('reviewTitle').value,
+            reviewText: document.getElementById('reviewText').value
+        };
+
+        const review = await api.submitReview(reviewData);
+        
+        showAlert('Review submitted successfully!', 'success');
+        form.reset();
+    } catch (error) {
+        showAlert(error.message, 'danger');
+    } finally {
+        setLoading(submitBtn, false);
+    }
+}
+
+async function submitSupport(event) {
+    event.preventDefault();
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    try {
+        setLoading(submitBtn, true);
+        
+        const ticketData = {
+            subject: document.getElementById('subject').value,
+            message: document.getElementById('message').value
+        };
+
+        const ticket = await api.submitSupport(ticketData);
+        
+        showAlert('Support ticket submitted successfully!', 'success');
+        form.reset();
+    } catch (error) {
+        showAlert(error.message, 'danger');
+    } finally {
+        setLoading(submitBtn, false);
+    }
+}
+
+function logout() {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
 }
 
 // Initialize the app
@@ -227,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialize date pickers if present
+    // Initialize date pickers
     if (typeof flatpickr !== 'undefined') {
         flatpickr("#pickupDate", {
             enableTime: true,
@@ -239,6 +367,24 @@ document.addEventListener('DOMContentLoaded', function() {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
             minDate: "today"
+        });
+    }
+
+    // Initialize rating stars
+    const ratingStars = document.querySelectorAll('.rating-star');
+    if (ratingStars.length) {
+        ratingStars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                ratingStars.forEach((s, i) => {
+                    if (i <= index) {
+                        s.classList.remove('far');
+                        s.classList.add('fas');
+                    } else {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                    }
+                });
+            });
         });
     }
 });

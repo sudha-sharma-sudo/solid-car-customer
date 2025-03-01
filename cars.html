@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Available Cars - Solid Car</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="index.html">
-                <i class="fas fa-car"></i> Solid Car
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="fas fa-car-side me-2"></i> Solid Car
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -19,118 +22,208 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="profile.html">Profile</a>
+                        <a class="nav-link" href="profile.html">
+                            <i class="fas fa-user me-1"></i> Profile
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <main class="container mt-5">
-        <h1 class="mb-4">Available Cars</h1>
+    <main class="container py-5">
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="mb-0">Available Cars</h1>
+                <p class="text-muted mb-0">Find your perfect ride</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" id="gridView">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="btn btn-outline-primary" id="listView">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
         
-        <!-- Filters -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <select class="form-select" id="carType">
-                    <option value="">Car Type</option>
-                    <option value="sedan">Sedan</option>
-                    <option value="suv">SUV</option>
-                    <option value="luxury">Luxury</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <select class="form-select" id="priceRange">
-                    <option value="">Price Range</option>
-                    <option value="budget">Budget</option>
-                    <option value="mid">Mid-range</option>
-                    <option value="premium">Premium</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <select class="form-select" id="transmission">
-                    <option value="">Transmission</option>
-                    <option value="automatic">Automatic</option>
-                    <option value="manual">Manual</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <button class="btn btn-primary w-100" onclick="filterCars()">Apply Filters</button>
+        <!-- Search and Filters -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <!-- Search -->
+                    <div class="col-md-12 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" id="searchCar" placeholder="Search by car name, brand, or features...">
+                        </div>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="col-md-3">
+                        <label class="form-label">Car Type</label>
+                        <select class="form-select" id="carType">
+                            <option value="">All Types</option>
+                            <option value="sedan">Sedan</option>
+                            <option value="suv">SUV</option>
+                            <option value="luxury">Luxury</option>
+                            <option value="sports">Sports</option>
+                            <option value="electric">Electric</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Price Range</label>
+                        <select class="form-select" id="priceRange">
+                            <option value="">All Prices</option>
+                            <option value="budget">Budget ($30-50/day)</option>
+                            <option value="mid">Mid-range ($51-80/day)</option>
+                            <option value="premium">Premium ($81-120/day)</option>
+                            <option value="luxury">Luxury ($120+/day)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Transmission</label>
+                        <select class="form-select" id="transmission">
+                            <option value="">All Types</option>
+                            <option value="automatic">Automatic</option>
+                            <option value="manual">Manual</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Features</label>
+                        <select class="form-select" id="features">
+                            <option value="">All Features</option>
+                            <option value="gps">GPS Navigation</option>
+                            <option value="bluetooth">Bluetooth</option>
+                            <option value="sunroof">Sunroof</option>
+                            <option value="camera">Backup Camera</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Car Listings -->
-        <div class="row" id="carListings">
+        <div class="row g-4" id="carListings">
             <!-- Car Card 1 -->
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="images/car-hero.svg" class="card-img-top" alt="Toyota Camry">
+            <div class="col-md-4">
+                <div class="card car-card h-100">
+                    <div class="position-relative">
+                        <img src="images/car-hero.svg" class="card-img-top" alt="Tesla Model 3">
+                        <span class="badge bg-success position-absolute top-0 end-0 m-3">Available</span>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Toyota Camry</h5>
-                        <p class="card-text">
-                            <span class="badge bg-info">Sedan</span>
-                            <span class="badge bg-success">Available</span>
-                        </p>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-cog"></i> Automatic</li>
-                            <li><i class="fas fa-user"></i> 5 Seats</li>
-                            <li><i class="fas fa-gas-pump"></i> Petrol</li>
-                        </ul>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="card-title mb-0">Tesla Model 3</h5>
+                                <p class="text-muted mb-0">Electric Sedan</p>
+                            </div>
+                            <span class="badge bg-primary">$80/day</span>
+                        </div>
+                        <div class="car-features mb-3">
+                            <span class="car-feature"><i class="fas fa-bolt me-1"></i> Electric</span>
+                            <span class="car-feature"><i class="fas fa-user me-1"></i> 5 Seats</span>
+                            <span class="car-feature"><i class="fas fa-road me-1"></i> 350mi Range</span>
+                        </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">$50/day</h6>
-                            <a href="booking.html?car=camry" class="btn btn-primary">Book Now</a>
+                            <div class="ratings">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                                <span class="ms-1 text-muted">(4.5)</span>
+                            </div>
+                            <a href="booking.html?car=tesla-model-3" class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-1"></i> Book Now
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Car Card 2 -->
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="images/car-hero.svg" class="card-img-top" alt="Honda CR-V">
+            <div class="col-md-4">
+                <div class="card car-card h-100">
+                    <div class="position-relative">
+                        <img src="images/car-hero.svg" class="card-img-top" alt="BMW X5">
+                        <span class="badge bg-success position-absolute top-0 end-0 m-3">Available</span>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Honda CR-V</h5>
-                        <p class="card-text">
-                            <span class="badge bg-info">SUV</span>
-                            <span class="badge bg-success">Available</span>
-                        </p>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-cog"></i> Automatic</li>
-                            <li><i class="fas fa-user"></i> 7 Seats</li>
-                            <li><i class="fas fa-gas-pump"></i> Petrol</li>
-                        </ul>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="card-title mb-0">BMW X5</h5>
+                                <p class="text-muted mb-0">Luxury SUV</p>
+                            </div>
+                            <span class="badge bg-primary">$120/day</span>
+                        </div>
+                        <div class="car-features mb-3">
+                            <span class="car-feature"><i class="fas fa-cog me-1"></i> Automatic</span>
+                            <span class="car-feature"><i class="fas fa-user me-1"></i> 7 Seats</span>
+                            <span class="car-feature"><i class="fas fa-gas-pump me-1"></i> Hybrid</span>
+                        </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">$65/day</h6>
-                            <a href="booking.html?car=crv" class="btn btn-primary">Book Now</a>
+                            <div class="ratings">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="ms-1 text-muted">(5.0)</span>
+                            </div>
+                            <a href="booking.html?car=bmw-x5" class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-1"></i> Book Now
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Car Card 3 -->
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="images/car-hero.svg" class="card-img-top" alt="BMW 3 Series">
+            <div class="col-md-4">
+                <div class="card car-card h-100">
+                    <div class="position-relative">
+                        <img src="images/car-hero.svg" class="card-img-top" alt="Porsche 911">
+                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Premium</span>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">BMW 3 Series</h5>
-                        <p class="card-text">
-                            <span class="badge bg-info">Luxury</span>
-                            <span class="badge bg-success">Available</span>
-                        </p>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-cog"></i> Automatic</li>
-                            <li><i class="fas fa-user"></i> 5 Seats</li>
-                            <li><i class="fas fa-gas-pump"></i> Petrol</li>
-                        </ul>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="card-title mb-0">Porsche 911</h5>
+                                <p class="text-muted mb-0">Sports Car</p>
+                            </div>
+                            <span class="badge bg-primary">$200/day</span>
+                        </div>
+                        <div class="car-features mb-3">
+                            <span class="car-feature"><i class="fas fa-cog me-1"></i> Automatic</span>
+                            <span class="car-feature"><i class="fas fa-user me-1"></i> 2 Seats</span>
+                            <span class="car-feature"><i class="fas fa-tachometer-alt me-1"></i> 450 HP</span>
+                        </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">$100/day</h6>
-                            <a href="booking.html?car=bmw3" class="btn btn-primary">Book Now</a>
+                            <div class="ratings">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                                <span class="ms-1 text-muted">(4.8)</span>
+                            </div>
+                            <a href="booking.html?car=porsche-911" class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-1"></i> Book Now
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -138,33 +231,88 @@
         </div>
 
         <!-- Pagination -->
-        <nav aria-label="Car listings pagination">
+        <nav class="mt-4" aria-label="Car listings pagination">
             <ul class="pagination justify-content-center">
                 <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
                 </li>
                 <li class="page-item active"><a class="page-link" href="#">1</a></li>
                 <li class="page-item"><a class="page-link" href="#">2</a></li>
                 <li class="page-item"><a class="page-link" href="#">3</a></li>
                 <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
+                    <a class="page-link" href="#" aria-label="Next">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
                 </li>
             </ul>
         </nav>
     </main>
 
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 Solid Car. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-light me-3"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-light"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/your-kit-code.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="js/app.js"></script>
     <script>
+        // Initialize Notyf
+        const notyf = new Notyf({
+            duration: 3000,
+            position: { x: 'right', y: 'top' }
+        });
+
+        // Filter cars
         function filterCars() {
-            const carType = document.getElementById('carType').value;
-            const priceRange = document.getElementById('priceRange').value;
-            const transmission = document.getElementById('transmission').value;
-            
-            // In a real app, this would make an API call to filter cars
-            console.log('Filtering cars with:', { carType, priceRange, transmission });
+            const filters = {
+                type: document.getElementById('carType').value,
+                price: document.getElementById('priceRange').value,
+                transmission: document.getElementById('transmission').value,
+                features: document.getElementById('features').value
+            };
+
+            // Simulate API call
+            console.log('Filtering cars with:', filters);
+            notyf.success('Filters applied successfully');
         }
+
+        // Search functionality
+        document.getElementById('searchCar').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            // Implement search logic here
+            console.log('Searching for:', searchTerm);
+        });
+
+        // View toggles
+        document.getElementById('gridView').addEventListener('click', () => {
+            document.getElementById('carListings').className = 'row g-4';
+            notyf.success('Grid view activated');
+        });
+
+        document.getElementById('listView').addEventListener('click', () => {
+            document.getElementById('carListings').className = 'row g-4 list-view';
+            notyf.success('List view activated');
+        });
+
+        // Add event listeners to filters
+        ['carType', 'priceRange', 'transmission', 'features'].forEach(id => {
+            document.getElementById(id).addEventListener('change', filterCars);
+        });
     </script>
 </body>
 </html>
