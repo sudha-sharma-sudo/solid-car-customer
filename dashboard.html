@@ -10,7 +10,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="index.html">
                 <i class="fas fa-car"></i> Solid Car
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -18,6 +18,15 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cars.html">Cars</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html">Profile</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="logout()">Logout</a>
                     </li>
@@ -27,83 +36,162 @@
     </nav>
 
     <main class="container mt-5">
-        <h1 class="mb-4">Welcome to Your Dashboard</h1>
-        
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card mb-4">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1>Welcome back, <span id="userName">User</span>!</h1>
+                <p class="lead">Here's an overview of your car rentals and activities.</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="cars.html" class="btn btn-primary btn-lg">Book a Car</a>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
                     <div class="card-body">
-                        <h5 class="card-title">Book a Car</h5>
-                        <p class="card-text">Search and book cars for your needs.</p>
-                        <a href="#" class="btn btn-primary">Book Now</a>
+                        <h6 class="card-subtitle mb-2">Active Bookings</h6>
+                        <h2 class="card-title mb-0">2</h2>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-4">
-                <div class="card mb-4">
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
                     <div class="card-body">
-                        <h5 class="card-title">My Bookings</h5>
-                        <p class="card-text">View and manage your car bookings.</p>
-                        <a href="#" class="btn btn-primary">View Bookings</a>
+                        <h6 class="card-subtitle mb-2">Completed Trips</h6>
+                        <h2 class="card-title mb-0">15</h2>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-4">
-                <div class="card mb-4">
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
                     <div class="card-body">
-                        <h5 class="card-title">Profile</h5>
-                        <p class="card-text">Update your personal information.</p>
-                        <a href="#" class="btn btn-primary">Edit Profile</a>
+                        <h6 class="card-subtitle mb-2">Reward Points</h6>
+                        <h2 class="card-title mb-0">750</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">Total Spent</h6>
+                        <h2 class="card-title mb-0">$1,250</h2>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mt-4">
-            <div class="col-md-8">
+        <!-- Current Bookings -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Current Bookings</h5>
+                <a href="history.html" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Car</th>
+                                <th>Pickup Date</th>
+                                <th>Return Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="images/car-hero.svg" alt="Toyota Camry" width="50" class="me-2">
+                                        Toyota Camry
+                                    </div>
+                                </td>
+                                <td>2024-03-15 10:00</td>
+                                <td>2024-03-17 10:00</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Extend</button>
+                                    <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="images/car-hero.svg" alt="Honda CR-V" width="50" class="me-2">
+                                        Honda CR-V
+                                    </div>
+                                </td>
+                                <td>2024-03-20 14:00</td>
+                                <td>2024-03-22 14:00</td>
+                                <td><span class="badge bg-warning">Upcoming</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Modify</button>
+                                    <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="row">
+            <div class="col-md-6">
                 <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Recent Activity</h5>
-                        <div class="list-group">
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Car Booking #123</h6>
-                                    <small>3 days ago</small>
-                                </div>
-                                <p class="mb-1">Toyota Camry booked for 2 days</p>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Profile Updated</h6>
-                                    <small>1 week ago</small>
-                                </div>
-                                <p class="mb-1">Contact information updated</p>
-                            </a>
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Activity</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Booking Confirmed</h6>
+                                <small>3 hours ago</small>
+                            </div>
+                            <p class="mb-1">Your booking for Honda CR-V has been confirmed.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Trip Completed</h6>
+                                <small>2 days ago</small>
+                            </div>
+                            <p class="mb-1">Your trip with BMW 3 Series has been completed.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Points Earned</h6>
+                                <small>2 days ago</small>
+                            </div>
+                            <p class="mb-1">You earned 150 reward points from your last trip.</p>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-4">
+
+            <!-- Upcoming Maintenance -->
+            <div class="col-md-6">
                 <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Quick Stats</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Total Bookings
-                                <span class="badge bg-primary rounded-pill">4</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Active Bookings
-                                <span class="badge bg-primary rounded-pill">1</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Completed Trips
-                                <span class="badge bg-primary rounded-pill">3</span>
-                            </li>
-                        </ul>
+                    <div class="card-header">
+                        <h5 class="mb-0">Car Maintenance Schedule</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Toyota Camry</h6>
+                                <span class="badge bg-warning">Tomorrow</span>
+                            </div>
+                            <p class="mb-1">Regular maintenance check scheduled.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Honda CR-V</h6>
+                                <span class="badge bg-info">Next Week</span>
+                            </div>
+                            <p class="mb-1">Oil change and tire rotation due.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -114,11 +202,11 @@
     <script src="https://kit.fontawesome.com/your-kit-code.js"></script>
     <script src="js/app.js"></script>
     <script>
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('user');
-            window.location.href = 'login.html';
-        }
+        // Load user data
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('user')) || { fullName: 'User' };
+            document.getElementById('userName').textContent = user.fullName;
+        });
     </script>
 </body>
 </html>

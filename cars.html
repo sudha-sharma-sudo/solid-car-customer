@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Cars - Solid Car</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-car"></i> Solid Car
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5">
+        <h1 class="mb-4">Available Cars</h1>
+        
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <select class="form-select" id="carType">
+                    <option value="">Car Type</option>
+                    <option value="sedan">Sedan</option>
+                    <option value="suv">SUV</option>
+                    <option value="luxury">Luxury</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="priceRange">
+                    <option value="">Price Range</option>
+                    <option value="budget">Budget</option>
+                    <option value="mid">Mid-range</option>
+                    <option value="premium">Premium</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="transmission">
+                    <option value="">Transmission</option>
+                    <option value="automatic">Automatic</option>
+                    <option value="manual">Manual</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100" onclick="filterCars()">Apply Filters</button>
+            </div>
+        </div>
+
+        <!-- Car Listings -->
+        <div class="row" id="carListings">
+            <!-- Car Card 1 -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="images/car-hero.svg" class="card-img-top" alt="Toyota Camry">
+                    <div class="card-body">
+                        <h5 class="card-title">Toyota Camry</h5>
+                        <p class="card-text">
+                            <span class="badge bg-info">Sedan</span>
+                            <span class="badge bg-success">Available</span>
+                        </p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-cog"></i> Automatic</li>
+                            <li><i class="fas fa-user"></i> 5 Seats</li>
+                            <li><i class="fas fa-gas-pump"></i> Petrol</li>
+                        </ul>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">$50/day</h6>
+                            <a href="booking.html?car=camry" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Card 2 -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="images/car-hero.svg" class="card-img-top" alt="Honda CR-V">
+                    <div class="card-body">
+                        <h5 class="card-title">Honda CR-V</h5>
+                        <p class="card-text">
+                            <span class="badge bg-info">SUV</span>
+                            <span class="badge bg-success">Available</span>
+                        </p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-cog"></i> Automatic</li>
+                            <li><i class="fas fa-user"></i> 7 Seats</li>
+                            <li><i class="fas fa-gas-pump"></i> Petrol</li>
+                        </ul>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">$65/day</h6>
+                            <a href="booking.html?car=crv" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Card 3 -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="images/car-hero.svg" class="card-img-top" alt="BMW 3 Series">
+                    <div class="card-body">
+                        <h5 class="card-title">BMW 3 Series</h5>
+                        <p class="card-text">
+                            <span class="badge bg-info">Luxury</span>
+                            <span class="badge bg-success">Available</span>
+                        </p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-cog"></i> Automatic</li>
+                            <li><i class="fas fa-user"></i> 5 Seats</li>
+                            <li><i class="fas fa-gas-pump"></i> Petrol</li>
+                        </ul>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">$100/day</h6>
+                            <a href="booking.html?car=bmw3" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Car listings pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-kit-code.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        function filterCars() {
+            const carType = document.getElementById('carType').value;
+            const priceRange = document.getElementById('priceRange').value;
+            const transmission = document.getElementById('transmission').value;
+            
+            // In a real app, this would make an API call to filter cars
+            console.log('Filtering cars with:', { carType, priceRange, transmission });
+        }
+    </script>
+</body>
+</html>
