@@ -55,8 +55,8 @@ while true; do
             if git commit -m "Auto-sync commit at $TIMESTAMP"; then
                 log_message "Changes committed successfully"
                 
-                # Try to push changes
-                if git push origin main; then
+            # Try to push changes to development branch
+            if git push origin development || [ "$?" = "1" ]; then
                     log_message "Changes pushed to remote successfully"
                 else
                     log_message "Error: Failed to push changes to remote"
