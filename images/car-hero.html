@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Car Hero Image</title>
+</head>
+<body>
+    <canvas id="carCanvas" width="800" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('carCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set gradient background
+        const gradient = ctx.createLinearGradient(0, 0, 800, 400);
+        gradient.addColorStop(0, '#6f42c1');
+        gradient.addColorStop(1, '#5a32a3');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 800, 400);
+
+        // Draw car silhouette
+        ctx.beginPath();
+        ctx.moveTo(200, 300);
+        ctx.lineTo(600, 300);
+        ctx.quadraticCurveTo(650, 300, 700, 250);
+        ctx.lineTo(650, 200);
+        ctx.quadraticCurveTo(500, 150, 350, 200);
+        ctx.lineTo(250, 200);
+        ctx.quadraticCurveTo(200, 200, 200, 300);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+
+        // Draw wheels
+        ctx.beginPath();
+        ctx.arc(300, 300, 40, 0, Math.PI * 2);
+        ctx.fillStyle = '#333333';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(600, 300, 40, 0, Math.PI * 2);
+        ctx.fillStyle = '#333333';
+        ctx.fill();
+
+        // Save as PNG
+        const link = document.createElement('a');
+        link.download = 'car-hero.jpg';
+        link.href = canvas.toDataURL('image/jpeg');
+        link.click();
+    </script>
+</body>
+</html>
