@@ -1,49 +1,4 @@
-// Car data simulation
-const carsData = [
-    {
-        id: 'tesla-model-3',
-        name: 'Tesla Model 3',
-        type: 'electric',
-        category: 'Sedan',
-        price: 80,
-        transmission: 'automatic',
-        seats: 5,
-        range: '350mi',
-        features: ['Electric', 'Autopilot', 'GPS', 'Bluetooth'],
-        rating: 4.5,
-        reviews: 128,
-        image: 'images/car-hero.svg',
-        status: 'available'
-    },
-    {
-        id: 'bmw-x5',
-        name: 'BMW X5',
-        type: 'hybrid',
-        category: 'SUV',
-        price: 120,
-        transmission: 'automatic',
-        seats: 7,
-        features: ['Hybrid', 'Panoramic Roof', 'GPS', 'Leather Seats'],
-        rating: 5.0,
-        reviews: 89,
-        image: 'images/car-hero.svg',
-        status: 'available'
-    },
-    {
-        id: 'porsche-911',
-        name: 'Porsche 911',
-        type: 'sports',
-        category: 'Sports Car',
-        price: 200,
-        transmission: 'automatic',
-        seats: 2,
-        features: ['450 HP', 'Sport Mode', 'Premium Sound', 'Leather Seats'],
-        rating: 4.8,
-        reviews: 64,
-        image: 'images/car-hero.svg',
-        status: 'premium'
-    }
-];
+const API_URL = 'http://localhost:3000/api';
 
 // State management
 let currentView = 'grid';
@@ -68,8 +23,33 @@ const notyf = new Notyf({
     ]
 });
 
+// Fetch cars from API
+async function fetchCars(filters = {}) {
+    try {
+        const queryParams = new URLSearchParams(filters).toString();
+        const response = await fetch(`${API_URL}/cars${queryParams ? '?' + queryParams : ''}`, {
+            headers: {
+                'Authorization': `Bearer ${getAuthToken()}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Error fetching cars');
+        }
+
+        return data.data.cars;
+    } catch (error) {
+        console.error('Fetch cars error:', error);
+        showAlert(error.message, 'danger');
+        return [];
+    }
+}
+
 // Render car cards
-function renderCars(cars) {
+async function renderCars(filters = {}) {
+    const cars = await fetchCars(filters);
     const carListings = document.getElementById('carListings');
     carListings.innerHTML = '';
 
@@ -168,57 +148,18 @@ function getFeatureIcon(feature) {
 }
 
 // Filter cars
-function filterCars() {
-    let filteredCars = [...carsData];
+async function filterCars() {
+    const filters = {
+        search: currentSearch,
+        ...currentFilters
+    };
 
-    // Apply search filter
-    if (currentSearch) {
-        filteredCars = filteredCars.filter(car => 
-            car.name.toLowerCase().includes(currentSearch) ||
-            car.category.toLowerCase().includes(currentSearch) ||
-            car.features.some(feature => feature.toLowerCase().includes(currentSearch))
-        );
-    }
-
-    // Apply type filter
-    if (currentFilters.type) {
-        filteredCars = filteredCars.filter(car => car.type === currentFilters.type);
-    }
-
-    // Apply price filter
-    if (currentFilters.price) {
-        const priceRanges = {
-            'budget': [30, 50],
-            'mid': [51, 80],
-            'premium': [81, 120],
-            'luxury': [121, Infinity]
-        };
-        const range = priceRanges[currentFilters.price];
-        filteredCars = filteredCars.filter(car => 
-            car.price >= range[0] && car.price <= range[1]
-        );
-    }
-
-    // Apply transmission filter
-    if (currentFilters.transmission) {
-        filteredCars = filteredCars.filter(car => 
-            car.transmission === currentFilters.transmission
-        );
-    }
-
-    // Apply features filter
-    if (currentFilters.features) {
-        filteredCars = filteredCars.filter(car => 
-            car.features.includes(currentFilters.features)
-        );
-    }
-
-    renderCars(filteredCars);
+    await renderCars(filters);
     
     // Show filter feedback
     const activeFilters = Object.values(currentFilters).filter(Boolean).length;
-    if (activeFilters > 0) {
-        notyf.success(`Showing ${filteredCars.length} cars with ${activeFilters} active filters`);
+    if (activeFilters > 0 || currentSearch) {
+        notyf.success(`Applied ${activeFilters + (currentSearch ? 1 : 0)} filters`);
     }
 }
 
@@ -264,61 +205,77 @@ document.getElementById('listView').addEventListener('click', () => {
 });
 
 // Show car details modal
-function showCarDetails(carId) {
-    const car = carsData.find(c => c.id === carId);
-    if (!car) return;
+async function showCarDetails(carId) {
+    try {
+        const response = await fetch(`${API_URL}/cars/${carId}`, {
+            headers: {
+                'Authorization': `Bearer ${getAuthToken()}`
+            }
+        });
 
-    const modal = document.createElement('div');
-    modal.className = 'modal fade';
-    modal.id = 'carDetailsModal';
-    modal.innerHTML = `
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">${car.name}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <img src="${car.image}" class="img-fluid rounded" alt="${car.name}">
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="mb-3">Specifications</h6>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><i class="fas fa-car me-2"></i> ${car.category}</li>
-                                <li class="mb-2"><i class="fas fa-cog me-2"></i> ${car.transmission}</li>
-                                <li class="mb-2"><i class="fas fa-user me-2"></i> ${car.seats} Seats</li>
-                                ${car.range ? `<li class="mb-2"><i class="fas fa-road me-2"></i> ${car.range} Range</li>` : ''}
-                            </ul>
-                            <h6 class="mb-3">Features</h6>
-                            <div class="car-features">
-                                ${car.features.map(feature => 
-                                    `<span class="car-feature">
-                                        <i class="fas fa-${getFeatureIcon(feature)} me-1"></i> ${feature}
-                                    </span>`
-                                ).join('')}
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Error fetching car details');
+        }
+
+        const car = data.data.car;
+
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.id = 'carDetailsModal';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${car.name}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="${car.image}" class="img-fluid rounded" alt="${car.name}">
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="mb-3">Specifications</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-car me-2"></i> ${car.category}</li>
+                                    <li class="mb-2"><i class="fas fa-cog me-2"></i> ${car.transmission}</li>
+                                    <li class="mb-2"><i class="fas fa-user me-2"></i> ${car.seats} Seats</li>
+                                    ${car.range ? `<li class="mb-2"><i class="fas fa-road me-2"></i> ${car.range} Range</li>` : ''}
+                                </ul>
+                                <h6 class="mb-3">Features</h6>
+                                <div class="car-features">
+                                    ${car.features.map(feature => 
+                                        `<span class="car-feature">
+                                            <i class="fas fa-${getFeatureIcon(feature)} me-1"></i> ${feature}
+                                        </span>`
+                                    ).join('')}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <a href="booking.html?car=${car.id}" class="btn btn-primary">
-                        <i class="fas fa-calendar-check me-1"></i> Book Now
-                    </a>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <a href="booking.html?car=${car.id}" class="btn btn-primary">
+                            <i class="fas fa-calendar-check me-1"></i> Book Now
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    
-    const modalInstance = new bootstrap.Modal(modal);
-    modalInstance.show();
-    
-    modal.addEventListener('hidden.bs.modal', () => {
-        modal.remove();
-    });
+        `;
+        document.body.appendChild(modal);
+        
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+        
+        modal.addEventListener('hidden.bs.modal', () => {
+            modal.remove();
+        });
+    } catch (error) {
+        console.error('Show car details error:', error);
+        showAlert(error.message, 'danger');
+    }
 }
 
 // Initialize tooltips
@@ -336,6 +293,6 @@ function initializeTooltips() {
 document.addEventListener('DOMContentLoaded', () => {
     // Check authentication before rendering
     if (checkAuth()) {
-        renderCars(carsData);
+        renderCars();
     }
 });
