@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cars.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -45,21 +46,21 @@
         <!-- Header Section -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="mb-0">Available Cars</h1>
-                <p class="text-muted mb-0">Find your perfect ride</p>
+                <h1 class="mb-0 fade-in">Available Cars</h1>
+                <p class="text-muted mb-0 fade-in">Find your perfect ride</p>
             </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary" id="gridView">
+            <div class="d-flex gap-2 fade-in">
+                <button class="btn btn-outline-primary active" id="gridView" title="Grid View">
                     <i class="fas fa-th-large"></i>
                 </button>
-                <button class="btn btn-outline-primary" id="listView">
+                <button class="btn btn-outline-primary" id="listView" title="List View">
                     <i class="fas fa-list"></i>
                 </button>
             </div>
         </div>
         
         <!-- Search and Filters -->
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4 fade-in">
             <div class="card-body">
                 <div class="row g-3">
                     <!-- Search -->
@@ -68,13 +69,20 @@
                             <span class="input-group-text bg-white border-end-0">
                                 <i class="fas fa-search text-muted"></i>
                             </span>
-                            <input type="text" class="form-control border-start-0" id="searchCar" placeholder="Search by car name, brand, or features...">
+                            <input type="text" class="form-control border-start-0" id="searchCar" 
+                                   placeholder="Search by car name, brand, or features...">
+                            <button class="btn btn-outline-secondary border-start-0" type="button" 
+                                    onclick="document.getElementById('searchCar').value = ''; filterCars();">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
                     
                     <!-- Filters -->
                     <div class="col-md-3">
-                        <label class="form-label">Car Type</label>
+                        <label class="form-label">
+                            <i class="fas fa-car-side me-1"></i> Car Type
+                        </label>
                         <select class="form-select" id="carType">
                             <option value="">All Types</option>
                             <option value="sedan">Sedan</option>
@@ -85,7 +93,9 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Price Range</label>
+                        <label class="form-label">
+                            <i class="fas fa-tag me-1"></i> Price Range
+                        </label>
                         <select class="form-select" id="priceRange">
                             <option value="">All Prices</option>
                             <option value="budget">Budget ($30-50/day)</option>
@@ -95,7 +105,9 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Transmission</label>
+                        <label class="form-label">
+                            <i class="fas fa-cog me-1"></i> Transmission
+                        </label>
                         <select class="form-select" id="transmission">
                             <option value="">All Types</option>
                             <option value="automatic">Automatic</option>
@@ -103,13 +115,16 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Features</label>
+                        <label class="form-label">
+                            <i class="fas fa-star me-1"></i> Features
+                        </label>
                         <select class="form-select" id="features">
                             <option value="">All Features</option>
-                            <option value="gps">GPS Navigation</option>
-                            <option value="bluetooth">Bluetooth</option>
-                            <option value="sunroof">Sunroof</option>
-                            <option value="camera">Backup Camera</option>
+                            <option value="GPS">GPS Navigation</option>
+                            <option value="Bluetooth">Bluetooth</option>
+                            <option value="Panoramic Roof">Sunroof</option>
+                            <option value="Premium Sound">Premium Audio</option>
+                            <option value="Leather Seats">Leather Seats</option>
                         </select>
                     </div>
                 </div>
@@ -118,120 +133,11 @@
 
         <!-- Car Listings -->
         <div class="row g-4" id="carListings">
-            <!-- Car Card 1 -->
-            <div class="col-md-4">
-                <div class="card car-card h-100">
-                    <div class="position-relative">
-                        <img src="images/car-hero.svg" class="card-img-top" alt="Tesla Model 3">
-                        <span class="badge bg-success position-absolute top-0 end-0 m-3">Available</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h5 class="card-title mb-0">Tesla Model 3</h5>
-                                <p class="text-muted mb-0">Electric Sedan</p>
-                            </div>
-                            <span class="badge bg-primary">$80/day</span>
-                        </div>
-                        <div class="car-features mb-3">
-                            <span class="car-feature"><i class="fas fa-bolt me-1"></i> Electric</span>
-                            <span class="car-feature"><i class="fas fa-user me-1"></i> 5 Seats</span>
-                            <span class="car-feature"><i class="fas fa-road me-1"></i> 350mi Range</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="ratings">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star-half-alt text-warning"></i>
-                                <span class="ms-1 text-muted">(4.5)</span>
-                            </div>
-                            <a href="booking.html?car=tesla-model-3" class="btn btn-primary">
-                                <i class="fas fa-calendar-check me-1"></i> Book Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Car Card 2 -->
-            <div class="col-md-4">
-                <div class="card car-card h-100">
-                    <div class="position-relative">
-                        <img src="images/car-hero.svg" class="card-img-top" alt="BMW X5">
-                        <span class="badge bg-success position-absolute top-0 end-0 m-3">Available</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h5 class="card-title mb-0">BMW X5</h5>
-                                <p class="text-muted mb-0">Luxury SUV</p>
-                            </div>
-                            <span class="badge bg-primary">$120/day</span>
-                        </div>
-                        <div class="car-features mb-3">
-                            <span class="car-feature"><i class="fas fa-cog me-1"></i> Automatic</span>
-                            <span class="car-feature"><i class="fas fa-user me-1"></i> 7 Seats</span>
-                            <span class="car-feature"><i class="fas fa-gas-pump me-1"></i> Hybrid</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="ratings">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <span class="ms-1 text-muted">(5.0)</span>
-                            </div>
-                            <a href="booking.html?car=bmw-x5" class="btn btn-primary">
-                                <i class="fas fa-calendar-check me-1"></i> Book Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Car Card 3 -->
-            <div class="col-md-4">
-                <div class="card car-card h-100">
-                    <div class="position-relative">
-                        <img src="images/car-hero.svg" class="card-img-top" alt="Porsche 911">
-                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Premium</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h5 class="card-title mb-0">Porsche 911</h5>
-                                <p class="text-muted mb-0">Sports Car</p>
-                            </div>
-                            <span class="badge bg-primary">$200/day</span>
-                        </div>
-                        <div class="car-features mb-3">
-                            <span class="car-feature"><i class="fas fa-cog me-1"></i> Automatic</span>
-                            <span class="car-feature"><i class="fas fa-user me-1"></i> 2 Seats</span>
-                            <span class="car-feature"><i class="fas fa-tachometer-alt me-1"></i> 450 HP</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="ratings">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star-half-alt text-warning"></i>
-                                <span class="ms-1 text-muted">(4.8)</span>
-                            </div>
-                            <a href="booking.html?car=porsche-911" class="btn btn-primary">
-                                <i class="fas fa-calendar-check me-1"></i> Book Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Cars will be dynamically inserted here -->
         </div>
 
         <!-- Pagination -->
-        <nav class="mt-4" aria-label="Car listings pagination">
+        <nav class="mt-4 fade-in" aria-label="Car listings pagination">
             <ul class="pagination justify-content-center">
                 <li class="page-item disabled">
                     <a class="page-link" href="#" aria-label="Previous">
@@ -269,50 +175,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
-    <script>
-        // Initialize Notyf
-        const notyf = new Notyf({
-            duration: 3000,
-            position: { x: 'right', y: 'top' }
-        });
-
-        // Filter cars
-        function filterCars() {
-            const filters = {
-                type: document.getElementById('carType').value,
-                price: document.getElementById('priceRange').value,
-                transmission: document.getElementById('transmission').value,
-                features: document.getElementById('features').value
-            };
-
-            // Simulate API call
-            console.log('Filtering cars with:', filters);
-            notyf.success('Filters applied successfully');
-        }
-
-        // Search functionality
-        document.getElementById('searchCar').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            // Implement search logic here
-            console.log('Searching for:', searchTerm);
-        });
-
-        // View toggles
-        document.getElementById('gridView').addEventListener('click', () => {
-            document.getElementById('carListings').className = 'row g-4';
-            notyf.success('Grid view activated');
-        });
-
-        document.getElementById('listView').addEventListener('click', () => {
-            document.getElementById('carListings').className = 'row g-4 list-view';
-            notyf.success('List view activated');
-        });
-
-        // Add event listeners to filters
-        ['carType', 'priceRange', 'transmission', 'features'].forEach(id => {
-            document.getElementById(id).addEventListener('change', filterCars);
-        });
-    </script>
+    <script src="js/cars.js"></script>
 </body>
 </html>
