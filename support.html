@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & Support - Solid Car</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-car"></i> Solid Car
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cars.html">Cars</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="support.html">Support</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html">Profile</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5">
+        <div class="row">
+            <!-- Support Options -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Need Help?</h5>
+                        <div class="list-group list-group-flush">
+                            <a href="#faq" class="list-group-item list-group-item-action">
+                                <i class="fas fa-question-circle me-2"></i> FAQ
+                            </a>
+                            <a href="#contact" class="list-group-item list-group-item-action">
+                                <i class="fas fa-envelope me-2"></i> Contact Us
+                            </a>
+                            <a href="#emergency" class="list-group-item list-group-item-action">
+                                <i class="fas fa-phone me-2"></i> Emergency Support
+                            </a>
+                            <a href="#guide" class="list-group-item list-group-item-action">
+                                <i class="fas fa-book me-2"></i> User Guide
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="card mt-4" id="emergency">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger">
+                            <i class="fas fa-exclamation-triangle"></i> Emergency Support
+                        </h5>
+                        <p class="card-text">Available 24/7 for urgent assistance</p>
+                        <div class="d-grid">
+                            <a href="tel:1-800-SOLID-CAR" class="btn btn-danger">
+                                <i class="fas fa-phone"></i> 1-800-SOLID-CAR
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-md-8">
+                <!-- FAQ Section -->
+                <div class="card mb-4" id="faq">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Frequently Asked Questions</h4>
+                        <div class="accordion" id="faqAccordion">
+                            <!-- FAQ Item 1 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        How do I make a car reservation?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Making a reservation is easy! Simply browse our available cars, select your desired dates, and follow the booking process. You'll need to be logged in to complete the reservation.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FAQ Item 2 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        What documents do I need for pickup?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        You'll need to present a valid driver's license, credit card, and booking confirmation. International customers must also show their passport.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FAQ Item 3 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        How do I modify or cancel my booking?
+                                    </button>
+                                </h2>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        You can modify or cancel your booking through your dashboard up to 24 hours before the pickup time. Cancellations within 24 hours may incur a fee.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="card mb-4" id="contact">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Contact Us</h4>
+                        <form id="contactForm" onsubmit="return submitContact(event)">
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject</label>
+                                <select class="form-select" id="subject" required>
+                                    <option value="">Select a topic</option>
+                                    <option value="booking">Booking Issue</option>
+                                    <option value="account">Account Help</option>
+                                    <option value="payment">Payment Question</option>
+                                    <option value="feedback">General Feedback</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea class="form-control" id="message" rows="5" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="attachment" class="form-label">Attachments (optional)</label>
+                                <input type="file" class="form-control" id="attachment" multiple>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- User Guide -->
+                <div class="card" id="guide">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">User Guide</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-car text-primary me-2"></i>
+                                            Booking Process
+                                        </h5>
+                                        <p class="card-text">Learn how to search, compare, and book cars efficiently.</p>
+                                        <a href="#" class="btn btn-outline-primary">Read Guide</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-key text-primary me-2"></i>
+                                            Pickup & Return
+                                        </h5>
+                                        <p class="card-text">Step-by-step guide for vehicle pickup and return procedures.</p>
+                                        <a href="#" class="btn btn-outline-primary">Read Guide</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-shield-alt text-primary me-2"></i>
+                                            Insurance & Coverage
+                                        </h5>
+                                        <p class="card-text">Understanding your insurance options and coverage details.</p>
+                                        <a href="#" class="btn btn-outline-primary">Read Guide</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-credit-card text-primary me-2"></i>
+                                            Payment & Billing
+                                        </h5>
+                                        <p class="card-text">Information about payment methods and billing procedures.</p>
+                                        <a href="#" class="btn btn-outline-primary">Read Guide</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        function submitContact(event) {
+            event.preventDefault();
+            // In a real app, this would submit the form to an API
+            alert('Thank you for your message. We will respond within 24 hours.');
+            document.getElementById('contactForm').reset();
+            return false;
+        }
+    </script>
+</body>
+</html>
