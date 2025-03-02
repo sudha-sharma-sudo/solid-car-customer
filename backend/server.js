@@ -119,26 +119,30 @@ if (config.server.env !== 'test') {
     const gracefulShutdown = async (signal) => {
         logger.info(`Received ${signal}. Starting graceful shutdown...`);
         
-        // Close server
-        server.close(() => {
-            logger.info('HTTP server closed');
-            
-            // Close database connection
-            mongoose.connection.close(false, () => {
-                logger.info('MongoDB connection closed');
-                process.exit(0);
+        try {
+            // Close server first
+            await new Promise((resolve, reject) => {
+                server.close((err) => {
+                    if (err) reject(err);
+                    logger.info('HTTP server closed');
+                    resolve();
+                });
             });
 
-            // If database doesn't close in 5 seconds, force exit
-            setTimeout(() => {
-                logger.error('Could not close MongoDB connection, forcefully shutting down');
-                process.exit(1);
-            }, 5000);
-        });
+            // Then close database connection
+            await mongoose.connection.close();
+            logger.info('MongoDB connection closed');
+            
+            // Exit gracefully
+            process.exit(0);
+        } catch (error) {
+            logger.error('Error during shutdown:', error);
+            process.exit(1);
+        }
 
-        // If server doesn't close in 10 seconds, force exit
+        // If everything doesn't close in 10 seconds, force exit
         setTimeout(() => {
-            logger.error('Could not close server in time, forcefully shutting down');
+            logger.error('Could not close all connections in time, forcefully shutting down');
             process.exit(1);
         }, 10000);
     };
