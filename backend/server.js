@@ -1,18 +1,54 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
 
 // Initialize express app
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(morgan('dev'));
-app.use(express.json());
+// Security middleware
+app.use(helmet());
+app.use(cookieParser());
 
-// JWT Secret (in production this would be in environment variables)
-const JWT_SECRET = 'your-secret-key';
+// CORS configuration
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:8000',
+    credentials: true
+}));
+
+// Logging middleware
+app.use(morgan('dev'));
+
+// Body parser middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting
+const loginLimiter = rateLimit({
+    windowMs: parseInt(process.env.LOGIN_WINDOW_MS) || 900000, // 15 minutes
+    max: parseInt(process.env.MAX_LOGIN_ATTEMPTS) || 5,
+    message: {
+        status: 'error',
+        message: 'Too many login attempts. Please try again later.'
+    }
+});
+
+// Apply rate limiting to auth routes
+app.use('/api/auth/login', loginLimiter);
+
+// CSRF protection
+app.use(csrf({ cookie: true }));
+
+// CSRF token middleware
+app.use((req, res, next) => {
+    res.cookie('XSRF-TOKEN', req.csrfToken());
+    next();
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
