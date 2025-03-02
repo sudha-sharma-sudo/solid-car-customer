@@ -77,22 +77,25 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    logger.info(`Server is running on port ${PORT}`);
-    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// Only start the server if we're not in test environment
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        logger.info(`Server is running on port ${PORT}`);
+        logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
 
-// Handle uncaught exceptions and unhandled rejections
-process.on('uncaughtException', (error) => {
-    logger.error('Uncaught Exception:', error);
-    // Gracefully shutdown
-    process.exit(1);
-});
+    // Handle uncaught exceptions and unhandled rejections
+    process.on('uncaughtException', (error) => {
+        logger.error('Uncaught Exception:', error);
+        // Gracefully shutdown
+        process.exit(1);
+    });
 
-process.on('unhandledRejection', (error) => {
-    logger.error('Unhandled Rejection:', error);
-    // Gracefully shutdown
-    process.exit(1);
-});
+    process.on('unhandledRejection', (error) => {
+        logger.error('Unhandled Rejection:', error);
+        // Gracefully shutdown
+        process.exit(1);
+    });
+}
 
 module.exports = app;
