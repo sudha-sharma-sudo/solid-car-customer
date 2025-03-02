@@ -7,9 +7,13 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
+const { errorHandler, logger } = require('./middleware/error');
 
 // Initialize express app
 const app = express();
+
+// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet());
@@ -58,27 +62,37 @@ app.use('/api/profile', require('./routes/profile'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/support', require('./routes/support'));
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(err.status || 500).json({
-        status: 'error',
-        message: err.message || 'Internal server error'
-    });
-});
+// Global error handling middleware
+app.use(errorHandler);
 
 // Handle 404 routes
 app.use((req, res) => {
+    logger.warn(`404 - Route not found: ${req.method} ${req.originalUrl}`);
     res.status(404).json({
         status: 'error',
-        message: 'Route not found'
+        message: 'Route not found',
+        code: 'ROUTE_NOT_FOUND'
     });
 });
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    logger.info(`Server is running on port ${PORT}`);
+    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+// Handle uncaught exceptions and unhandled rejections
+process.on('uncaughtException', (error) => {
+    logger.error('Uncaught Exception:', error);
+    // Gracefully shutdown
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (error) => {
+    logger.error('Unhandled Rejection:', error);
+    // Gracefully shutdown
+    process.exit(1);
 });
 
 module.exports = app;
