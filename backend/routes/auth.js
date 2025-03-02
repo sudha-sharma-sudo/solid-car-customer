@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userService = require('../services/userService');
 const validateJoi = require('../middleware/validateJoi');
-const { registerSchema, loginSchema } = require('../middleware/validationSchemas');
+const { registerSchema, loginSchema, updateProfileSchema } = require('../middleware/validationSchemas');
 const auth = require('../middleware/auth');
 const { AppError } = require('../middleware/error');
 
@@ -92,9 +92,7 @@ router.patch('/profile', auth, validateJoi(updateProfileSchema), async (req, res
 });
 
 // Request password reset endpoint
-router.post('/forgot-password', validateJoi(Joi.object({
-    email: Joi.string().email().required()
-})), async (req, res, next) => {
+router.post('/forgot-password', validateJoi(loginSchema), async (req, res, next) => {
     try {
         await userService.requestPasswordReset(req.body.email);
         // Always return success even if email doesn't exist (security best practice)
@@ -108,13 +106,7 @@ router.post('/forgot-password', validateJoi(Joi.object({
 });
 
 // Reset password endpoint
-router.post('/reset-password/:token', validateJoi(Joi.object({
-    password: Joi.string()
-        .min(8)
-        .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
-        .required(),
-    confirmPassword: Joi.ref('password')
-})), async (req, res, next) => {
+router.post('/reset-password/:token', validateJoi(updateProfileSchema), async (req, res, next) => {
     try {
         await userService.resetPassword(req.params.token, req.body.password);
         res.json({
@@ -148,7 +140,7 @@ router.post('/resend-verification', auth, async (req, res, next) => {
         }
 
         // Generate new verification token and send email
-        // This would be implemented in the email service
+        await userService.sendVerificationEmail(user);
         
         res.json({
             status: 'success',
