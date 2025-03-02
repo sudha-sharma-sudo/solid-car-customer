@@ -2,54 +2,21 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { body, validationResult } = require('express-validator');
-
-// Password validation regex
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const { AppError } = require('../middleware/error');
+const validateJoi = require('../middleware/validateJoi');
+const { registerSchema, loginSchema } = require('../middleware/validationSchemas');
+const auth = require('../middleware/auth');
 
 // Simulated user storage (in production, use a database)
 const users = new Map();
 
-// Validation middleware
-const validateRegistration = [
-    body('fullName').trim().notEmpty().withMessage('Full name is required'),
-    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
-    body('password')
-        .matches(passwordRegex)
-        .withMessage('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
-    body('confirmPassword').custom((value, { req }) => {
-        if (value !== req.body.password) {
-            throw new Error('Password confirmation does not match password');
-        }
-        return true;
-    })
-];
-
-const validateLogin = [
-    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
-    body('password').notEmpty().withMessage('Password is required')
-];
-
 // Register endpoint
-router.post('/register', validateRegistration, async (req, res) => {
+router.post('/register', validateJoi(registerSchema), async (req, res, next) => {
     try {
-        const { fullName, email, password, confirmPassword, phone } = req.body;
-
-        // Check for validation errors
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Validation failed',
-                errors: errors.array()
-            });
-        }
+        const { fullName, email, password, phone } = req.body;
 
         if (users.has(email)) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'User already exists'
-            });
+            throw new AppError('User already exists', 400, 'USER_EXISTS');
         }
 
         // Hash password
@@ -64,17 +31,18 @@ router.post('/register', validateRegistration, async (req, res) => {
             password: hashedPassword,
             phone: phone || '',
             memberSince: new Date().toISOString(),
-            membershipLevel: 'Bronze'
+            membershipLevel: 'Bronze',
+            verified: false
         };
 
         // Save user
         users.set(email, user);
 
-        // Create token with environment variables
+        // Create token
         const token = jwt.sign(
             { id: user.id, email: user.email },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN }
+            process.env.JWT_SECRET || 'your-secret-key',
+            { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
         );
 
         // Set token in HTTP-only cookie
@@ -95,52 +63,32 @@ router.post('/register', validateRegistration, async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Register error:', error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Error registering user'
-        });
+        next(error);
     }
 });
 
 // Login endpoint
-router.post('/login', validateLogin, async (req, res) => {
+router.post('/login', validateJoi(loginSchema), async (req, res, next) => {
     try {
         const { email, password } = req.body;
-
-        // Check for validation errors
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Validation failed',
-                errors: errors.array()
-            });
-        }
 
         // Check if user exists
         const user = users.get(email);
         if (!user) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Invalid credentials'
-            });
+            throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
         }
 
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Invalid credentials'
-            });
+            throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
         }
 
-        // Create token with environment variables
+        // Create token
         const token = jwt.sign(
             { id: user.id, email: user.email },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN }
+            process.env.JWT_SECRET || 'your-secret-key',
+            { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
         );
 
         // Set token in HTTP-only cookie
@@ -161,17 +109,18 @@ router.post('/login', validateLogin, async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Error logging in'
-        });
+        next(error);
     }
 });
 
 // Logout endpoint
 router.post('/logout', (req, res) => {
-    res.clearCookie('token');
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
+    
     res.json({
         status: 'success',
         message: 'Logged out successfully'
@@ -179,14 +128,11 @@ router.post('/logout', (req, res) => {
 });
 
 // Get current user endpoint
-router.get('/me', require('../middleware/auth'), (req, res) => {
+router.get('/me', auth, async (req, res, next) => {
     try {
         const user = users.get(req.user.email);
         if (!user) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'User not found'
-            });
+            throw new AppError('User not found', 404, 'USER_NOT_FOUND');
         }
 
         const { password, ...userData } = user;
@@ -197,11 +143,53 @@ router.get('/me', require('../middleware/auth'), (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Get user error:', error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Error getting user data'
+        next(error);
+    }
+});
+
+// Password reset request endpoint
+router.post('/forgot-password', validateJoi(Joi.object({
+    email: Joi.string().email().required()
+})), async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const user = users.get(email);
+
+        // Always return success even if email doesn't exist (security best practice)
+        res.json({
+            status: 'success',
+            message: 'If an account exists with this email, you will receive password reset instructions'
         });
+
+        // In a real application, you would:
+        // 1. Generate a password reset token
+        // 2. Save it to the database with an expiration
+        // 3. Send an email with the reset link
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Email verification endpoint
+router.post('/verify-email', auth, async (req, res, next) => {
+    try {
+        const user = users.get(req.user.email);
+        if (!user) {
+            throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+        }
+
+        // In a real application, you would:
+        // 1. Verify the email verification token
+        // 2. Update the user's verified status
+        user.verified = true;
+        users.set(req.user.email, user);
+
+        res.json({
+            status: 'success',
+            message: 'Email verified successfully'
+        });
+    } catch (error) {
+        next(error);
     }
 });
 
