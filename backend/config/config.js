@@ -30,11 +30,18 @@ const config = {
     jwt: {
         secret: process.env.JWT_SECRET || 'your-secret-key',
         expiresIn: process.env.JWT_EXPIRES_IN || '24h',
+        refreshToken: {
+            secret: process.env.REFRESH_TOKEN_SECRET || 'your-refresh-secret-key',
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d'
+        },
+        issuer: process.env.JWT_ISSUER || 'solid-car-api',
+        audience: process.env.JWT_AUDIENCE || 'solid-car-client',
         cookieOptions: {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            domain: process.env.COOKIE_DOMAIN || 'localhost'
         }
     },
 
@@ -61,14 +68,42 @@ const config = {
 
     // Security configuration
     security: {
-        bcryptRounds: 10,
+        bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS) || 12,
         rateLimit: {
-            windowMs: parseInt(process.env.LOGIN_WINDOW_MS) || 900000, // 15 minutes
-            maxAttempts: parseInt(process.env.MAX_LOGIN_ATTEMPTS) || 5
+            login: {
+                windowMs: parseInt(process.env.LOGIN_WINDOW_MS) || 900000, // 15 minutes
+                maxAttempts: parseInt(process.env.MAX_LOGIN_ATTEMPTS) || 5,
+                message: 'Too many login attempts, please try again later'
+            },
+            api: {
+                windowMs: parseInt(process.env.API_WINDOW_MS) || 60000, // 1 minute
+                maxRequests: parseInt(process.env.MAX_API_REQUESTS) || 100,
+                message: 'Too many requests, please try again later'
+            }
         },
         cors: {
             origin: process.env.FRONTEND_URL || 'http://localhost:8000',
-            credentials: true
+            credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization'],
+            exposedHeaders: ['X-Total-Count', 'X-Request-ID']
+        },
+        helmet: {
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    styleSrc: ["'self'", "'unsafe-inline'"],
+                    imgSrc: ["'self'", 'data:', 'https:'],
+                    scriptSrc: ["'self'"],
+                    fontSrc: ["'self'", 'https:', 'data:'],
+                    objectSrc: ["'none'"],
+                    upgradeInsecureRequests: []
+                }
+            },
+            crossOriginEmbedderPolicy: true,
+            crossOriginOpenerPolicy: true,
+            crossOriginResourcePolicy: { policy: "same-site" },
+            frameguard: { action: 'deny' }
         }
     },
 
@@ -82,10 +117,25 @@ const config = {
     // Logging configuration
     logging: {
         level: process.env.LOG_LEVEL || 'info',
+        format: process.env.LOG_FORMAT || 'json',
         files: {
-            error: 'error.log',
-            combined: 'combined.log'
-        }
+            error: 'logs/error.log',
+            combined: 'logs/combined.log',
+            access: 'logs/access.log'
+        },
+        options: {
+            maxSize: '5m',
+            maxFiles: 5,
+            tailable: true,
+            zippedArchive: true
+        },
+        morgan: {
+            format: process.env.NODE_ENV === 'production' ? 'combined' : 'dev',
+            options: {
+                skip: (req, res) => process.env.NODE_ENV === 'test'
+            }
+        },
+        excludePaths: ['/health', '/metrics']
     },
 
     // Cache configuration
@@ -94,11 +144,20 @@ const config = {
         checkPeriod: parseInt(process.env.CACHE_CHECK_PERIOD) || 600 // 10 minutes in seconds
     },
 
-    // Feature flags
+    // Feature flags and toggles
     features: {
         emailVerification: process.env.FEATURE_EMAIL_VERIFICATION !== 'false',
         socialLogin: process.env.FEATURE_SOCIAL_LOGIN === 'true',
-        maintenance: process.env.MAINTENANCE_MODE === 'true'
+        maintenance: process.env.MAINTENANCE_MODE === 'true',
+        reCaptcha: process.env.FEATURE_RECAPTCHA === 'true',
+        twoFactorAuth: process.env.FEATURE_2FA === 'true',
+        darkMode: process.env.FEATURE_DARK_MODE !== 'false',
+        analytics: process.env.FEATURE_ANALYTICS === 'true',
+        notifications: {
+            email: process.env.FEATURE_EMAIL_NOTIFICATIONS !== 'false',
+            push: process.env.FEATURE_PUSH_NOTIFICATIONS === 'true',
+            sms: process.env.FEATURE_SMS_NOTIFICATIONS === 'true'
+        }
     },
 
     // Business rules

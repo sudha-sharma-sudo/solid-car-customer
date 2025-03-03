@@ -1,175 +1,153 @@
-/* Car Listings Styles */
-.car-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+/* Car Details Page Styles */
 
-.car-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.car-image-wrapper {
-    position: relative;
-    overflow: hidden;
-    height: 200px;
-}
-
-.car-image-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.car-card:hover .car-image-wrapper img {
-    transform: scale(1.05);
-}
-
-.car-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.car-card:hover .car-overlay {
-    opacity: 1;
-}
-
-.car-features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.car-feature {
-    font-size: 0.875rem;
-    padding: 4px 8px;
-    background: #f8f9fa;
-    border-radius: 4px;
-    color: #6c757d;
-    cursor: help;
-}
-
-/* List View Styles */
-.list-view .col-md-4 {
-    width: 100%;
-}
-
-.list-view .car-card {
-    display: flex;
-    flex-direction: row;
-}
-
-.list-view .car-image-wrapper {
-    width: 300px;
-    height: 100%;
-}
-
-.list-view .card-body {
-    flex: 1;
-}
-
-/* Filter Section Styles */
-.filter-section {
-    background: #fff;
+/* Gallery Styles */
+#carMediaGallery {
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 2rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.filter-header {
-    padding: 1rem;
-    border-bottom: 1px solid #e9ecef;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+#carMediaGallery .carousel-item {
+    height: 400px;
+    background-color: #f8f9fa;
 }
 
-.active-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 1rem;
+#carMediaGallery .carousel-item img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
 }
 
-.filter-tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 12px;
-    background: #e9ecef;
-    border-radius: 16px;
-    font-size: 0.875rem;
+#carMediaGallery .carousel-control-prev,
+#carMediaGallery .carousel-control-next {
+    width: 5%;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Video Tour Styles */
+#videoTourSection {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#videoPlayer {
+    width: 100%;
+    border-radius: 4px;
+    background-color: #000;
+}
+
+/* Specifications Styles */
+#specifications .col-md-6 {
+    padding: 8px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+#specifications .text-muted {
+    font-size: 0.9rem;
+}
+
+/* Features Styles */
+#features .col-md-6 {
+    padding: 8px 16px;
+}
+
+#features .fa-check {
+    color: #28a745;
+}
+
+/* Additional Features Styles */
+#features .col-12 h6 {
+    color: #333;
+    margin-bottom: 4px;
+}
+
+#features .col-12 .small {
+    color: #6c757d;
+}
+
+/* Booking Form Styles */
+#bookingForm {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+#bookingForm .form-label {
+    font-weight: 500;
     color: #495057;
 }
 
-.filter-tag .remove-filter {
-    margin-left: 6px;
-    cursor: pointer;
-    opacity: 0.6;
+#bookingForm .form-control {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    padding: 8px 12px;
 }
 
-.filter-tag .remove-filter:hover {
-    opacity: 1;
+#bookingForm .form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Favorite Button Styles */
-.favorite-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: white;
+/* Card Styles */
+.card {
     border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
 }
 
-.favorite-btn:hover {
-    transform: scale(1.1);
+.card:hover {
+    transform: translateY(-2px);
 }
 
-.favorite-btn i {
-    color: #dc3545;
-    font-size: 1.2rem;
+.card-title {
+    color: #333;
+    font-weight: 600;
 }
 
-/* Sort Options Styles */
-.sort-options {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+/* Badge Styles */
+.badge {
+    padding: 8px 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.sort-label {
-    color: #6c757d;
-    font-size: 0.875rem;
+/* Price Display */
+#carPrice {
+    color: #28a745;
+    font-weight: 600;
 }
 
-/* Animation Classes */
-.fade-in {
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #carMediaGallery .carousel-item {
+        height: 300px;
+    }
+
+    .sticky-top {
+        position: relative !important;
+        top: 0 !important;
+    }
+
+    #specifications .col-md-6,
+    #features .col-md-6 {
+        border-bottom: 1px solid #eee;
+    }
+}
+
+/* Animation Effects */
+.carousel-item {
+    transition: transform 0.6s ease-in-out;
+}
+
+.card {
     animation: fadeIn 0.5s ease-in;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -177,18 +155,68 @@
     }
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .list-view .car-card {
-        flex-direction: column;
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body.dark-mode {
+        background-color: #1a1a1a;
+        color: #fff;
     }
 
-    .list-view .car-image-wrapper {
-        width: 100%;
+    .dark-mode .card {
+        background-color: #2d2d2d;
+        border-color: #404040;
     }
 
-    .sort-options {
-        flex-direction: column;
-        align-items: stretch;
+    .dark-mode .card-title {
+        color: #fff;
     }
+
+    .dark-mode #specifications .col-md-6,
+    .dark-mode #features .col-md-6 {
+        border-color: #404040;
+    }
+
+    .dark-mode .text-muted {
+        color: #b0b0b0 !important;
+    }
+
+    .dark-mode #bookingForm {
+        background-color: #2d2d2d;
+    }
+
+    .dark-mode .form-control {
+        background-color: #333;
+        border-color: #404040;
+        color: #fff;
+    }
+
+    .dark-mode .form-control:focus {
+        border-color: #0066cc;
+        box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25);
+    }
+}
+
+/* Loading States */
+.loading {
+    position: relative;
+    min-height: 200px;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

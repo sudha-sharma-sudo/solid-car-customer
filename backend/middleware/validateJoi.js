@@ -1,21 +1,35 @@
-const { AppError } = require('./error');
+const { ValidationError } = require('./error');
 
-const validateJoi = (schema) => {
+/**
+ * Creates middleware that validates request data against a Joi schema
+ * @param {Object} schema - Joi schema to validate against
+ * @param {string} source - Request property to validate ('body', 'query', 'params')
+ * @returns {Function} Express middleware function
+ */
+const validateJoi = (schema, source = 'body') => {
     return (req, res, next) => {
-        const { error } = schema.validate(req.body, {
-            abortEarly: false,
-            stripUnknown: true
-        });
+        const { error, value } = schema.validate(req[source]);
 
         if (error) {
-            const errorMessages = error.details.map(detail => ({
-                field: detail.path[0],
-                message: detail.message
-            }));
+            // Transform Joi validation errors into our custom format
+            const validationErrors = error.details.reduce((acc, detail) => {
+                const key = detail.path.join('.');
+                if (!acc[key]) {
+                    acc[key] = [];
+                }
+                acc[key].push(detail.message);
+                return acc;
+            }, {});
 
-            throw new AppError('Validation failed', 400, 'VALIDATION_ERROR', errorMessages);
+            throw new ValidationError('Validation failed', {
+                errors: validationErrors,
+                fields: Object.keys(validationErrors),
+                count: error.details.length
+            });
         }
 
+        // Replace request data with validated and sanitized data
+        req[source] = value;
         next();
     };
 };

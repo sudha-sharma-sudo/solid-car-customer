@@ -1,7 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { validateGetCars, validateGetCarById } = require('../middleware/validate');
+const { 
+    validateGetCars, 
+    validateGetCarById, 
+    validateGetFeaturedCars,
+    validateGetCarSpecifications,
+    validateGetCarVideoTour
+} = require('../middleware/validate');
 const carService = require('../services/carService');
 const { AppError, logger } = require('../middleware/error');
 
@@ -23,7 +29,7 @@ router.get('/options', auth, (req, res) => {
     }
 });
 
-// Get all cars with filtering, sorting, and pagination
+// Get all cars with enhanced filtering, sorting, and pagination
 router.get('/', auth, validateGetCars, async (req, res, next) => {
     try {
         const filters = {
@@ -34,7 +40,9 @@ router.get('/', auth, validateGetCars, async (req, res, next) => {
             search: req.query.search,
             sort: req.query.sort,
             page: parseInt(req.query.page) || 1,
-            limit: parseInt(req.query.limit) || 10
+            limit: parseInt(req.query.limit) || 10,
+            featured: req.query.featured === 'true',
+            status: req.query.status
         };
 
         const result = await carService.getCars(filters);
@@ -51,10 +59,28 @@ router.get('/', auth, validateGetCars, async (req, res, next) => {
     }
 });
 
-// Get car by ID
+// Get featured cars
+router.get('/featured', auth, validateGetFeaturedCars, async (req, res, next) => {
+    try {
+        const limit = parseInt(req.query.limit) || 3;
+        const featuredCars = await carService.getFeaturedCars(limit);
+
+        res.json({
+            status: 'success',
+            data: {
+                cars: featuredCars
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Get car by ID with optional detailed view
 router.get('/:id', auth, validateGetCarById, async (req, res, next) => {
     try {
-        const car = await carService.getCarById(req.params.id);
+        const includeDetails = req.query.details === 'true';
+        const car = await carService.getCarById(req.params.id, includeDetails);
         
         if (!car) {
             throw new AppError('Car not found', 404, 'CAR_NOT_FOUND');
@@ -71,12 +97,57 @@ router.get('/:id', auth, validateGetCarById, async (req, res, next) => {
     }
 });
 
-// Error handling middleware specific to cars routes
+// Get car specifications
+router.get('/:id/specifications', auth, validateGetCarSpecifications, async (req, res, next) => {
+    try {
+        const specifications = await carService.getCarSpecifications(req.params.id);
+        
+        if (!specifications) {
+            throw new AppError('Car specifications not found', 404, 'SPECIFICATIONS_NOT_FOUND');
+        }
+
+        res.json({
+            status: 'success',
+            data: {
+                specifications
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Get car video tour
+router.get('/:id/video-tour', auth, validateGetCarVideoTour, async (req, res, next) => {
+    try {
+        const videoTour = await carService.getCarVideoTour(req.params.id);
+        
+        if (!videoTour) {
+            throw new AppError('Video tour not available', 404, 'VIDEO_TOUR_NOT_FOUND');
+        }
+
+        res.json({
+            status: 'success',
+            data: {
+                videoTour
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Enhanced error handling middleware specific to cars routes
 router.use((err, req, res, next) => {
-    // Log the error using the logger
+    // Log the error with additional context
     logger.error('Cars route error:', { 
         message: err.message,
         code: err.code || 'UNKNOWN_ERROR',
+        path: req.path,
+        method: req.method,
+        query: req.query,
+        params: req.params,
+        userId: req.user?.id,
         stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
 

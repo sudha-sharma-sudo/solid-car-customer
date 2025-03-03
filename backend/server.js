@@ -8,7 +8,7 @@ const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
 const config = require('./config/config');
 const connectDB = require('./config/database');
-const { errorHandler, logger } = require('./middleware/error');
+const { errorHandler, logger, requestTracker } = require('./middleware/error');
 
 // Initialize express app
 const app = express();
@@ -16,12 +16,19 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
+// Add request tracking early in middleware chain
+app.use(requestTracker);
+
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 app.set('trust proxy', 1);
 
-// Security middleware
-app.use(helmet());
-app.use(cookieParser());
+// Enhanced security middleware
+app.use(helmet(config.security.helmet));
+app.use(cookieParser(config.jwt.secret, {
+    httpOnly: true,
+    secure: config.server.env === 'production',
+    sameSite: config.server.env === 'production' ? 'strict' : 'lax'
+}));
 
 // CORS configuration
 app.use(cors(config.security.cors));
@@ -37,19 +44,59 @@ if (config.server.env === 'development') {
 app.use(express.json({ limit: config.upload.maxSize }));
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting
+// Enhanced rate limiting
 const loginLimiter = rateLimit({
-    windowMs: config.security.rateLimit.windowMs,
-    max: config.security.rateLimit.maxAttempts,
+    windowMs: config.security.rateLimit.login.windowMs,
+    max: config.security.rateLimit.login.maxAttempts,
     message: {
         status: 'error',
-        message: 'Too many login attempts. Please try again later.',
+        message: config.security.rateLimit.login.message,
         code: 'RATE_LIMIT_EXCEEDED'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+        logger.warn('Rate limit exceeded', {
+            ip: req.ip,
+            path: req.path,
+            requestId: req.id
+        });
+        res.status(429).json({
+            status: 'error',
+            message: config.security.rateLimit.login.message,
+            code: 'RATE_LIMIT_EXCEEDED'
+        });
     }
 });
 
-// Apply rate limiting to auth routes
+// Global API rate limiting
+const apiLimiter = rateLimit({
+    windowMs: config.security.rateLimit.api.windowMs,
+    max: config.security.rateLimit.api.maxRequests,
+    message: {
+        status: 'error',
+        message: config.security.rateLimit.api.message,
+        code: 'RATE_LIMIT_EXCEEDED'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+        logger.warn('API rate limit exceeded', {
+            ip: req.ip,
+            path: req.path,
+            requestId: req.id
+        });
+        res.status(429).json({
+            status: 'error',
+            message: config.security.rateLimit.api.message,
+            code: 'RATE_LIMIT_EXCEEDED'
+        });
+    }
+});
+
+// Apply rate limiting
 app.use('/api/auth/login', loginLimiter);
+app.use('/api', apiLimiter);
 
 // CSRF protection
 if (config.server.env === 'production') {
@@ -72,13 +119,22 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Maintenance mode check
+// Enhanced maintenance mode check
 app.use((req, res, next) => {
     if (config.features.maintenance && req.path !== '/health') {
+        logger.info('Maintenance mode request blocked', {
+            path: req.path,
+            method: req.method,
+            ip: req.ip,
+            requestId: req.id
+        });
+        
         return res.status(503).json({
             status: 'error',
             message: 'Service is temporarily unavailable due to maintenance',
-            code: 'MAINTENANCE_MODE'
+            code: 'MAINTENANCE_MODE',
+            estimatedDowntime: config.features.maintenanceEstimatedDuration || 'unknown',
+            retryAfter: 300 // 5 minutes
         });
     }
     next();
@@ -98,13 +154,21 @@ app.use('/uploads', express.static(config.upload.directory));
 // Global error handling middleware
 app.use(errorHandler);
 
-// Handle 404 routes
+// Enhanced 404 handler
 app.use((req, res) => {
-    logger.warn(`404 - Route not found: ${req.method} ${req.originalUrl}`);
+    logger.warn('Route not found', {
+        path: req.originalUrl,
+        method: req.method,
+        ip: req.ip,
+        userAgent: req.get('user-agent'),
+        requestId: req.id
+    });
+    
     res.status(404).json({
         status: 'error',
         message: 'Route not found',
-        code: 'ROUTE_NOT_FOUND'
+        code: 'ROUTE_NOT_FOUND',
+        requestId: req.id
     });
 });
 
@@ -115,9 +179,13 @@ if (config.server.env !== 'test') {
         logger.info(`Environment: ${config.server.env}`);
     });
 
-    // Handle graceful shutdown
+    // Enhanced graceful shutdown
     const gracefulShutdown = async (signal) => {
-        logger.info(`Received ${signal}. Starting graceful shutdown...`);
+        logger.info(`Received ${signal}. Starting graceful shutdown...`, {
+            activeConnections: server.getConnections ? 
+                await new Promise(resolve => server.getConnections((err, count) => resolve(err ? 0 : count))) : 
+                'unknown'
+        });
         
         try {
             // Close server first

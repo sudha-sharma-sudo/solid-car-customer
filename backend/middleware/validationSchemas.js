@@ -1,5 +1,37 @@
 const Joi = require('joi');
 
+// Custom Joi extensions
+const JoiPhone = Joi.extend((joi) => ({
+    type: 'phone',
+    base: joi.string(),
+    messages: {
+        'phone.invalid': 'Please provide a valid phone number'
+    },
+    validate(value, helpers) {
+        if (!value.match(/^\+?[1-9]\d{1,14}$/)) {
+            return { value, errors: helpers.error('phone.invalid') };
+        }
+        return { value };
+    }
+}));
+
+// Common patterns and constants
+const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const CAR_ID_PATTERN = /^[a-zA-Z0-9-]+$/;
+const LOCATION_PATTERN = /^[a-zA-Z0-9\s,.-]{5,100}$/;
+
+// Common schema objects
+const passwordSchema = {
+    min: 8,
+    max: 100,
+    pattern: PASSWORD_PATTERN,
+    messages: {
+        'string.min': 'Password must be at least 8 characters long',
+        'string.max': 'Password cannot exceed 100 characters',
+        'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+    }
+};
+
 const registerSchema = Joi.object({
     fullName: Joi.string()
         .min(2)

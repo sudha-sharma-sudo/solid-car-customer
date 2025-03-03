@@ -1,390 +1,201 @@
-// Utility Functions
-const showAlert = (message, type = 'info') => {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
-    alertDiv.style.zIndex = '1050';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    document.body.appendChild(alertDiv);
+// Initialize global app namespace
+window.app = {};
 
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 5000);
+// Initialize Notyf for notifications
+window.app.notyf = new Notyf({
+    duration: 3000,
+    position: { x: 'right', y: 'top' },
+    types: [
+        {
+            type: 'success',
+            background: '#28a745'
+        },
+        {
+            type: 'error',
+            background: '#dc3545'
+        }
+    ]
+});
+
+// Debug logging function
+window.app.debug = function(message, data = null) {
+    console.log(`[DEBUG] ${message}`, data || '');
 };
 
-const setLoading = (element, isLoading) => {
-    if (isLoading) {
-        element.classList.add('loading');
-        element.disabled = true;
-    } else {
-        element.classList.remove('loading');
-        element.disabled = false;
-    }
+// Authentication functions
+window.app.getToken = function() {
+    const token = sessionStorage.getItem('token');
+    window.app.debug('Getting token:', token ? 'Token exists' : 'No token');
+    return token;
 };
 
-const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+window.app.getUser = function() {
+    const userStr = sessionStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    window.app.debug('Getting user:', user);
+    return user;
 };
 
-const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
+window.app.isAuthenticated = function() {
+    const token = window.app.getToken();
+    const isAuth = !!token;
+    window.app.debug('Checking authentication:', isAuth);
+    return isAuth;
 };
 
-// Simulated API Calls
-const api = {
-    async login(credentials) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        if (!credentials.email || !credentials.password) {
-            throw new Error('Please fill in all fields');
-        }
-        
-        // Simulate successful login
-        return {
-            fullName: 'John Smith',
-            email: credentials.email,
-            phone: '+1-555-123-4567',
-            memberSince: new Date().toISOString(),
-            membershipLevel: 'Gold'
-        };
-    },
-
-    async register(userData) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        if (!userData.fullName || !userData.email || !userData.password) {
-            throw new Error('Please fill in all required fields');
-        }
-        
-        if (userData.password !== userData.confirmPassword) {
-            throw new Error('Passwords do not match');
-        }
-        
-        return {
-            ...userData,
-            memberSince: new Date().toISOString(),
-            membershipLevel: 'Bronze'
-        };
-    },
-
-    async bookCar(bookingData) {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        if (!bookingData.pickupLocation || !bookingData.pickupDate || !bookingData.returnDate) {
-            throw new Error('Please fill in all required fields');
-        }
-        
-        return {
-            bookingId: 'BK' + Math.random().toString(36).substr(2, 9),
-            ...bookingData,
-            status: 'confirmed',
-            timestamp: new Date().toISOString()
-        };
-    },
-
-    async updateProfile(profileData) {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        if (!profileData.fullName || !profileData.email) {
-            throw new Error('Please fill in all required fields');
-        }
-        
-        return {
-            ...profileData,
-            updatedAt: new Date().toISOString()
-        };
-    },
-
-    async submitReview(reviewData) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        if (!reviewData.rating || !reviewData.reviewText) {
-            throw new Error('Please provide both rating and review text');
-        }
-        
-        return {
-            ...reviewData,
-            reviewId: 'RV' + Math.random().toString(36).substr(2, 9),
-            timestamp: new Date().toISOString()
-        };
-    },
-
-    async submitSupport(ticketData) {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        if (!ticketData.subject || !ticketData.message) {
-            throw new Error('Please fill in all required fields');
-        }
-        
-        return {
-            ...ticketData,
-            ticketId: 'TK' + Math.random().toString(36).substr(2, 9),
-            status: 'open',
-            timestamp: new Date().toISOString()
-        };
-    }
+window.app.setAuthData = function(token, user) {
+    window.app.debug('Setting auth data:', { token: 'exists', user });
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('user', JSON.stringify(user));
+    // Also store in localStorage for persistent login
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
 };
 
-// Event Handlers
-async function handleLogin(event) {
-    event.preventDefault();
-    const form = event.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    try {
-        setLoading(submitBtn, true);
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const rememberMe = document.getElementById('rememberMe')?.checked;
-
-        const user = await api.login({ email, password });
-        
-        if (rememberMe) {
-            localStorage.setItem('userEmail', email);
-        }
-        
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        showAlert('Login successful! Redirecting...', 'success');
-        setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 1500);
-    } catch (error) {
-        showAlert(error.message, 'danger');
-    } finally {
-        setLoading(submitBtn, false);
-    }
-}
-
-async function handleRegister(event) {
-    event.preventDefault();
-    const form = event.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    try {
-        setLoading(submitBtn, true);
-        
-        const userData = {
-            fullName: document.getElementById('fullName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            password: document.getElementById('password').value,
-            confirmPassword: document.getElementById('confirmPassword').value
-        };
-
-        const terms = document.getElementById('terms')?.checked;
-        if (!terms) {
-            throw new Error('Please accept the terms and conditions');
-        }
-
-        const user = await api.register(userData);
-        
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        showAlert('Registration successful! Redirecting...', 'success');
-        setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 1500);
-    } catch (error) {
-        showAlert(error.message, 'danger');
-    } finally {
-        setLoading(submitBtn, false);
-    }
-}
-
-async function handleBooking(event) {
-    event.preventDefault();
-    const form = event.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    try {
-        setLoading(submitBtn, true);
-        
-        const bookingData = {
-            pickupLocation: document.getElementById('pickupLocation').value,
-            pickupDate: document.getElementById('pickupDate').value,
-            returnDate: document.getElementById('returnDate').value,
-            insurance: document.getElementById('insurance')?.checked,
-            gps: document.getElementById('gps')?.checked,
-            childSeat: document.getElementById('childSeat')?.checked
-        };
-
-        const booking = await api.bookCar(bookingData);
-        
-        showAlert('Booking confirmed successfully!', 'success');
-        setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 1500);
-    } catch (error) {
-        showAlert(error.message, 'danger');
-    } finally {
-        setLoading(submitBtn, false);
-    }
-}
-
-async function updateProfile(event) {
-    event.preventDefault();
-    const form = event.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    try {
-        setLoading(submitBtn, true);
-        
-        const profileData = {
-            fullName: document.getElementById('fullName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            currentPassword: document.getElementById('currentPassword').value,
-            newPassword: document.getElementById('newPassword').value
-        };
-
-        const updatedProfile = await api.updateProfile(profileData);
-        
-        // Update stored user data
-        const user = JSON.parse(localStorage.getItem('user'));
-        localStorage.setItem('user', JSON.stringify({
-            ...user,
-            ...updatedProfile
-        }));
-        
-        showAlert('Profile updated successfully!', 'success');
-    } catch (error) {
-        showAlert(error.message, 'danger');
-    } finally {
-        setLoading(submitBtn, false);
-    }
-}
-
-async function submitReview(event) {
-    event.preventDefault();
-    const form = event.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    try {
-        setLoading(submitBtn, true);
-        
-        const reviewData = {
-            rating: document.querySelectorAll('.rating-stars .fas').length,
-            carId: document.getElementById('carSelect').value,
-            reviewTitle: document.getElementById('reviewTitle').value,
-            reviewText: document.getElementById('reviewText').value
-        };
-
-        const review = await api.submitReview(reviewData);
-        
-        showAlert('Review submitted successfully!', 'success');
-        form.reset();
-    } catch (error) {
-        showAlert(error.message, 'danger');
-    } finally {
-        setLoading(submitBtn, false);
-    }
-}
-
-async function submitSupport(event) {
-    event.preventDefault();
-    const form = event.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    try {
-        setLoading(submitBtn, true);
-        
-        const ticketData = {
-            subject: document.getElementById('subject').value,
-            message: document.getElementById('message').value
-        };
-
-        const ticket = await api.submitSupport(ticketData);
-        
-        showAlert('Support ticket submitted successfully!', 'success');
-        form.reset();
-    } catch (error) {
-        showAlert(error.message, 'danger');
-    } finally {
-        setLoading(submitBtn, false);
-    }
-}
-
-function logout() {
-    localStorage.removeItem('isLoggedIn');
+window.app.clearAuthData = function() {
+    window.app.debug('Clearing auth data');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = 'login.html';
-}
+};
 
-// Initialize the app
-document.addEventListener('DOMContentLoaded', function() {
-    // Check authentication
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const currentPage = window.location.pathname;
+// Try to restore session from localStorage
+window.app.restoreSession = function() {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
     
-    if (isLoggedIn === 'true' && (currentPage.includes('login.html') || currentPage.includes('register.html'))) {
-        window.location.href = 'dashboard.html';
-    } else if (isLoggedIn !== 'true' && 
-              !currentPage.includes('login.html') && 
-              !currentPage.includes('register.html') && 
-              !currentPage.includes('index.html')) {
+    if (token && userStr) {
+        window.app.debug('Restoring session from localStorage');
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', userStr);
+        return true;
+    }
+    return false;
+};
+
+// Update navigation based on authentication status
+window.app.updateNavigation = function() {
+    const userNav = document.getElementById('userNav');
+    if (!userNav) {
+        window.app.debug('userNav element not found');
+        return;
+    }
+
+    const user = window.app.getUser();
+    window.app.debug('Updating navigation for user:', user);
+
+    if (user) {
+        userNav.innerHTML = `
+            <div class="d-flex align-items-center">
+                <span class="me-3">Welcome, ${user.name}</span>
+                <a href="profile.html" class="btn btn-outline-primary me-2">Profile</a>
+                <button onclick="app.logout()" class="btn btn-outline-danger">Logout</button>
+            </div>
+        `;
+    } else {
+        userNav.innerHTML = `
+            <a href="login.html" class="btn btn-outline-primary me-2">Login</a>
+            <a href="register.html" class="btn btn-primary">Register</a>
+        `;
+    }
+};
+
+// Logout function
+window.app.logout = function() {
+    window.app.debug('Logging out');
+    window.app.clearAuthData();
+    window.app.notyf.success('Logged out successfully');
+    window.location.href = 'login.html';
+};
+
+// Mock login function for demo
+window.app.mockLogin = async function(email, password) {
+    try {
+        window.app.debug('Starting mock login');
+        
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Create a mock JWT token
+        const mockToken = {
+            token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZW1haWwiOiJkZW1vQGV4YW1wbGUuY29tIiwibmFtZSI6IkRlbW8gVXNlciIsImlhdCI6MTUxNjIzOTAyMn0.KxCLHXuTiU4Kqxf7o4GIxKoqbY9V8YyV8vrGN8jXJ8k',
+            user: {
+                id: '123',
+                email: email,
+                name: 'Demo User'
+            }
+        };
+
+        window.app.debug('Mock login successful, setting auth data');
+        window.app.setAuthData(mockToken.token, mockToken.user);
+        
+        window.app.notyf.success('Logged in successfully');
+        window.app.updateNavigation();
+        
+        // Get intended URL or default to cars page
+        const intendedUrl = sessionStorage.getItem('intendedUrl');
+        window.app.debug('Redirecting to:', intendedUrl || 'cars.html');
+        
+        if (intendedUrl) {
+            sessionStorage.removeItem('intendedUrl');
+            window.location.href = intendedUrl;
+        } else {
+            window.location.href = 'cars.html';
+        }
+    } catch (error) {
+        console.error('Mock login error:', error);
+        window.app.notyf.error('Login failed');
+        throw error;
+    }
+};
+
+// Handle API errors
+window.app.handleApiError = function(error) {
+    window.app.debug('API Error:', error);
+    
+    if (error.status === 401) {
+        window.app.clearAuthData();
+        sessionStorage.setItem('intendedUrl', window.location.href);
         window.location.href = 'login.html';
     }
     
-    // Auto-fill email if remembered
-    const rememberedEmail = localStorage.getItem('userEmail');
-    const emailInput = document.getElementById('email');
-    if (rememberedEmail && emailInput) {
-        emailInput.value = rememberedEmail;
-    }
+    window.app.notyf.error(error.message || 'An error occurred');
+};
 
-    // Load user data
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-        const userNameElements = document.querySelectorAll('#userName, #profileName, #membershipName');
-        userNameElements.forEach(element => {
-            if (element) element.textContent = user.fullName;
-        });
-    }
-
-    // Initialize date pickers
-    if (typeof flatpickr !== 'undefined') {
-        flatpickr("#pickupDate", {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: "today"
-        });
-        
-        flatpickr("#returnDate", {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: "today"
-        });
-    }
-
-    // Initialize rating stars
-    const ratingStars = document.querySelectorAll('.rating-star');
-    if (ratingStars.length) {
-        ratingStars.forEach((star, index) => {
-            star.addEventListener('click', () => {
-                ratingStars.forEach((s, i) => {
-                    if (i <= index) {
-                        s.classList.remove('far');
-                        s.classList.add('fas');
-                    } else {
-                        s.classList.remove('fas');
-                        s.classList.add('far');
-                    }
-                });
-            });
-        });
+// Check authentication on page load
+document.addEventListener('DOMContentLoaded', () => {
+    window.app.debug('DOM loaded, checking authentication');
+    
+    // Try to restore session
+    window.app.restoreSession();
+    
+    // Update navigation
+    window.app.updateNavigation();
+    
+    // Get current page
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    window.app.debug('Current page:', currentPage);
+    
+    // List of public pages that don't require authentication
+    const publicPages = ['login.html', 'register.html', 'index.html'];
+    
+    // Check if authentication is required
+    if (!publicPages.includes(currentPage)) {
+        window.app.debug('Page requires authentication');
+        if (!window.app.isAuthenticated()) {
+            window.app.debug('User not authenticated, redirecting to login');
+            sessionStorage.setItem('intendedUrl', window.location.href);
+            window.location.href = 'login.html';
+            return;
+        }
+        window.app.debug('User is authenticated, proceeding');
+    } else if (currentPage === 'login.html' && window.app.isAuthenticated()) {
+        window.app.debug('Already authenticated, redirecting from login page');
+        window.location.href = 'cars.html';
+        return;
     }
 });
+
+// Export debug function to global scope for console access
+window.debug = window.app.debug;

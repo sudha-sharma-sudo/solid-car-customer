@@ -1,298 +1,239 @@
-const API_URL = 'http://localhost:3000/api';
-
-// State management
-let currentView = 'grid';
-let currentPage = 1;
-let itemsPerPage = 9;
-let currentSort = 'recommended';
-let favorites = new Set(JSON.parse(localStorage.getItem('favorites') || '[]'));
+// Car list state
 let currentFilters = {
-    type: [],
-    price: { min: '', max: '' },
+    type: '',
+    price: '',
     transmission: '',
     features: [],
-    search: ''
+    search: '',
+    sort: '',
+    page: 1,
+    limit: 9
 };
 
-// Initialize Notyf
-const notyf = new Notyf({
-    duration: 3000,
-    position: { x: 'right', y: 'top' }
-});
-
-// Debounce function
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Show/hide loading state
-function showLoading(show) {
-    document.getElementById('loadingState').classList.toggle('d-none', !show);
-    document.getElementById('carListings').classList.toggle('d-none', show);
-}
-
-// Update favorites count
-function updateFavoritesCount() {
-    document.getElementById('favoritesCount').textContent = favorites.size;
-}
-
-// Toggle favorite status
-function toggleFavorite(carId) {
-    if (favorites.has(carId)) {
-        favorites.delete(carId);
-        notyf.success('Removed from favorites');
-    } else {
-        favorites.add(carId);
-        notyf.success('Added to favorites');
-    }
-    localStorage.setItem('favorites', JSON.stringify([...favorites]));
-    updateFavoritesCount();
-    document.querySelectorAll(`.favorite-btn[data-car-id="${carId}"]`).forEach(btn => {
-        btn.innerHTML = favorites.has(carId) ? 
-            '<i class="fas fa-heart"></i>' : 
-            '<i class="far fa-heart"></i>';
-    });
-}
-
-// Create car card HTML
-function createCarCard(car, isFavorite) {
-    return `
-        <div class="card car-card h-100">
-            <div class="position-relative car-image-wrapper">
-                <img src="${car.image}" class="card-img-top" alt="${car.name}">
-                <button class="favorite-btn" onclick="toggleFavorite('${car.id}')" data-car-id="${car.id}">
-                    <i class="${isFavorite ? 'fas' : 'far'} fa-heart"></i>
-                </button>
-                <span class="badge ${car.status === 'available' ? 'bg-success' : 'bg-danger'} position-absolute top-0 start-0 m-3">
-                    ${car.status === 'available' ? 'Available' : 'Premium'}
-                </span>
-                <div class="car-overlay">
-                    <button class="btn btn-light btn-sm" onclick="showCarDetails('${car.id}')">
-                        <i class="fas fa-info-circle"></i> View Details
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                        <h5 class="card-title mb-0">${car.name}</h5>
-                        <p class="text-muted mb-0">${car.category}</p>
-                    </div>
-                    <span class="badge bg-primary">$${car.price}/day</span>
-                </div>
-                <div class="car-features mb-3">
-                    ${car.features.slice(0, 3).map(feature => 
-                        `<span class="car-feature" data-tooltip="${feature}">
-                            <i class="fas fa-${getFeatureIcon(feature)} me-1"></i> ${feature}
-                        </span>`
-                    ).join('')}
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="ratings">
-                        ${generateRatingStars(car.rating)}
-                        <span class="ms-1 text-muted">(${car.rating})</span>
-                    </div>
-                    <a href="booking.html?car=${car.id}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-calendar-check me-1"></i> Book Now
-                    </a>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// Generate rating stars
-function generateRatingStars(rating) {
-    return Array.from({ length: 5 }, (_, i) => {
-        if (i < Math.floor(rating)) {
-            return '<i class="fas fa-star text-warning"></i>';
-        } else if (i === Math.floor(rating) && !Number.isInteger(rating)) {
-            return '<i class="fas fa-star-half-alt text-warning"></i>';
+// Initialize car details page
+async function initializeCarDetails() {
+    try {
+        // Get car ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const carId = urlParams.get('id');
+        
+        if (!carId) {
+            window.location.href = 'cars.html';
+            return;
         }
-        return '<i class="far fa-star text-warning"></i>';
-    }).join('');
+
+        // For demo purposes, use mock data
+        const mockCarData = {
+            name: 'Tesla Model 3',
+            type: 'electric',
+            price: 80,
+            specifications: {
+                engine: 'Dual Motor All-Wheel Drive',
+                power: '346 hp',
+                acceleration: '3.1s 0-60 mph',
+                range: '350 miles',
+                charging: '15 minutes for 200 miles',
+                dimensions: {
+                    length: '184.8 inches',
+                    width: '72.8 inches',
+                    height: '56.8 inches'
+                }
+            },
+            features: ['Electric', 'Autopilot', 'GPS', 'Bluetooth'],
+            additionalFeatures: [
+                {
+                    name: 'Autopilot',
+                    description: 'Advanced driver assistance with automatic steering, acceleration, and braking'
+                },
+                {
+                    name: 'Premium Interior',
+                    description: 'Premium seat material and trim with custom driver profiles'
+                }
+            ],
+            gallery: [
+                '/images/car-hero.svg',
+                '/images/car-hero.svg',
+                '/images/car-hero.svg'
+            ],
+            hasVideoTour: true
+        };
+
+        // Update page content with mock data
+        updateCarDetails(mockCarData);
+        
+        // Initialize video tour if available
+        if (mockCarData.hasVideoTour) {
+            await initializeVideoTour(carId);
+        }
+
+        // Initialize gallery
+        initializeGallery(mockCarData.gallery);
+
+        // Initialize booking form
+        initializeBookingForm(carId);
+
+    } catch (error) {
+        console.error('Error initializing car details:', error);
+        notyf.error('Failed to load car details');
+    }
 }
 
-// Get feature icon
-function getFeatureIcon(feature) {
-    const iconMap = {
-        'Electric': 'bolt',
-        'Hybrid': 'leaf',
-        'GPS': 'map-marker-alt',
-        'Bluetooth': 'bluetooth',
-        'Leather': 'chair',
-        'Autopilot': 'robot',
-        'Sport': 'flag-checkered',
-        'Sound': 'music',
-        'Panoramic': 'sun'
-    };
-    return iconMap[feature.split(' ')[0]] || 'check';
-}
+// Update car details in the DOM
+function updateCarDetails(car) {
+    // Update basic information
+    document.getElementById('carName').textContent = car.name;
+    document.getElementById('carType').textContent = car.type.toUpperCase();
+    document.getElementById('carPrice').textContent = `$${car.price}/day`;
+    
+    // Update specifications
+    const specificationsContainer = document.getElementById('specifications');
+    specificationsContainer.innerHTML = '';
+    
+    for (const [key, value] of Object.entries(car.specifications)) {
+        if (typeof value === 'object') {
+            // Handle nested specifications like dimensions
+            for (const [subKey, subValue] of Object.entries(value)) {
+                specificationsContainer.innerHTML += `
+                    <div class="col-md-6 mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">${formatSpecName(subKey)}</span>
+                            <span>${subValue}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        } else {
+            specificationsContainer.innerHTML += `
+                <div class="col-md-6 mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">${formatSpecName(key)}</span>
+                        <span>${value}</span>
+                    </div>
+                </div>
+            `;
+        }
+    }
 
-// Update active filters display
-function updateActiveFilters() {
-    const container = document.getElementById('activeFilters');
-    container.innerHTML = '';
+    // Update features
+    const featuresContainer = document.getElementById('features');
+    featuresContainer.innerHTML = '';
     
-    const filters = [];
-    
-    if (currentFilters.type.length > 0) {
-        filters.push(...currentFilters.type.map(type => ({
-            label: `Type: ${type}`,
-            value: type,
-            type: 'type'
-        })));
-    }
-    
-    if (currentFilters.price.min || currentFilters.price.max) {
-        filters.push({
-            label: `Price: $${currentFilters.price.min || '0'} - $${currentFilters.price.max || '∞'}`,
-            type: 'price'
-        });
-    }
-    
-    if (currentFilters.transmission) {
-        filters.push({
-            label: `Transmission: ${currentFilters.transmission}`,
-            value: currentFilters.transmission,
-            type: 'transmission'
-        });
-    }
-    
-    if (currentFilters.features.length > 0) {
-        filters.push(...currentFilters.features.map(feature => ({
-            label: `Feature: ${feature}`,
-            value: feature,
-            type: 'features'
-        })));
-    }
-    
-    filters.forEach(filter => {
-        const tag = document.createElement('span');
-        tag.className = 'filter-tag';
-        tag.innerHTML = `
-            ${filter.label}
-            <i class="fas fa-times remove-filter" onclick="removeFilter('${filter.type}', '${filter.value || ''}')"></i>
+    car.features.forEach(feature => {
+        featuresContainer.innerHTML += `
+            <div class="col-md-6 mb-2">
+                <i class="fas fa-check text-success me-2"></i>${feature}
+            </div>
         `;
-        container.appendChild(tag);
+    });
+
+    // Update additional features
+    if (car.additionalFeatures && car.additionalFeatures.length > 0) {
+        car.additionalFeatures.forEach(feature => {
+            featuresContainer.innerHTML += `
+                <div class="col-12 mb-3">
+                    <h6>${feature.name}</h6>
+                    <p class="text-muted small">${feature.description}</p>
+                </div>
+            `;
+        });
+    }
+}
+
+// Initialize video tour
+async function initializeVideoTour(carId) {
+    try {
+        // For demo purposes, use a mock video URL
+        const mockVideoTour = {
+            videoUrl: 'https://example.com/videos/tesla-model-3-tour.mp4'
+        };
+        
+        // Show video section
+        const videoSection = document.getElementById('videoTourSection');
+        videoSection.classList.remove('d-none');
+        
+        // Update video player
+        const videoPlayer = document.getElementById('videoPlayer');
+        videoPlayer.src = mockVideoTour.videoUrl;
+        
+        // Add video event listeners
+        videoPlayer.addEventListener('play', () => {
+            console.log('Video playback started');
+        });
+        
+        videoPlayer.addEventListener('pause', () => {
+            console.log('Video playback paused');
+        });
+        
+        videoPlayer.addEventListener('ended', () => {
+            console.log('Video playback completed');
+        });
+
+    } catch (error) {
+        console.error('Error initializing video tour:', error);
+        notyf.error('Failed to load video tour');
+    }
+}
+
+// Initialize gallery
+function initializeGallery(gallery) {
+    if (!gallery || gallery.length === 0) return;
+
+    const carouselInner = document.querySelector('#carMediaGallery .carousel-inner');
+    carouselInner.innerHTML = '';
+    
+    gallery.forEach((image, index) => {
+        carouselInner.innerHTML += `
+            <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                <img src="${image}" class="d-block w-100" alt="Car Image ${index + 1}">
+            </div>
+        `;
     });
 }
 
-// Remove individual filter
-function removeFilter(type, value) {
-    if (type === 'price') {
-        currentFilters.price = { min: '', max: '' };
-        document.getElementById('minPrice').value = '';
-        document.getElementById('maxPrice').value = '';
-    } else if (Array.isArray(currentFilters[type])) {
-        currentFilters[type] = currentFilters[type].filter(v => v !== value);
-        const select = document.getElementById(type === 'type' ? 'carType' : 'features');
-        Array.from(select.options).forEach(option => {
-            if (option.value === value) option.selected = false;
-        });
-    } else {
-        currentFilters[type] = '';
-        document.getElementById(type).value = '';
-    }
+// Initialize booking form
+function initializeBookingForm(carId) {
+    const bookingForm = document.getElementById('bookingForm');
     
-    filterCars();
-}
-
-// Reset all filters
-function resetFilters() {
-    currentFilters = {
-        type: [],
-        price: { min: '', max: '' },
-        transmission: '',
-        features: [],
-        search: ''
-    };
+    // Set minimum dates
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
     
-    document.getElementById('searchCar').value = '';
-    document.getElementById('minPrice').value = '';
-    document.getElementById('maxPrice').value = '';
-    document.getElementById('transmission').value = '';
-    document.getElementById('carType').selectedIndex = -1;
-    document.getElementById('features').selectedIndex = -1;
+    document.getElementById('startDate').min = tomorrow.toISOString().split('T')[0];
+    document.getElementById('endDate').min = tomorrow.toISOString().split('T')[0];
     
-    filterCars();
-    notyf.success('Filters reset');
-}
-
-// Toggle view mode
-function toggleView(view) {
-    if (currentView === view) return;
-    
-    currentView = view;
-    const listings = document.getElementById('carListings');
-    const gridBtn = document.getElementById('gridView');
-    const listBtn = document.getElementById('listView');
-    
-    listings.style.opacity = '0';
-    setTimeout(() => {
-        listings.className = `row g-4 ${view === 'list' ? 'list-view' : ''}`;
-        listings.style.opacity = '1';
-    }, 300);
-    
-    gridBtn.classList.toggle('active', view === 'grid');
-    listBtn.classList.toggle('active', view === 'list');
-    
-    notyf.success(`${view.charAt(0).toUpperCase() + view.slice(1)} view activated`);
-}
-
-// Initialize components and event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    if (checkAuth()) {
-        renderCars();
-        updateFavoritesCount();
-    }
-});
-
-// Filter cars
-async function filterCars() {
-    currentPage = 1;
-    await renderCars();
-    updateActiveFilters();
-}
-
-// Show favorites modal
-function showFavorites() {
-    const modal = new bootstrap.Modal(document.getElementById('favoritesModal'));
-    const favoritesList = document.getElementById('favoritesList');
-    favoritesList.innerHTML = '<div class="text-center py-5"><div class="spinner-border"></div></div>';
-    
-    modal.show();
-    
-    // Fetch favorite cars
-    Promise.all([...favorites].map(id => 
-        fetch(`${API_URL}/cars/${id}`, {
-            headers: { 'Authorization': `Bearer ${getAuthToken()}` }
-        }).then(res => res.json())
-    )).then(cars => {
-
-// Initialize tooltips
-function initializeTooltips() {
-    const tooltips = document.querySelectorAll('[data-tooltip]');
-    tooltips.forEach(element => {
-        new bootstrap.Tooltip(element, {
-            title: element.dataset.tooltip,
-            placement: 'top'
-        });
+    bookingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        try {
+            const formData = {
+                carId,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                pickupLocation: document.getElementById('pickupLocation').value,
+                dropoffLocation: document.getElementById('dropoffLocation').value
+            };
+            
+            // For demo purposes, simulate a successful booking
+            notyf.success('Booking created successfully');
+            window.location.href = 'booking.html';
+            
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            notyf.error('Failed to create booking');
+        }
     });
 }
 
-// Initial render
-document.addEventListener('DOMContentLoaded', () => {
-    // Check authentication before rendering
-    if (checkAuth()) {
-        renderCars();
-    }
-});
+// Helper function to format specification names
+function formatSpecName(name) {
+    return name
+        .split(/(?=[A-Z])/)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+// Initialize page based on current URL
+if (window.location.pathname.includes('carDetails.html')) {
+    initializeCarDetails();
+}
