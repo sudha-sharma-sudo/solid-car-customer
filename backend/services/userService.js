@@ -1,9 +1,68 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const speakeasy = require('speakeasy');
+const QRCode = require('qrcode');
 const { AppError } = require('../middleware/error');
 
 class UserService {
+    /**
+     * Setup 2FA for a user
+     */
+    async setup2FA(userId) {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+        }
+
+        // Generate a secret key
+        const secret = speakeasy.generateSecret({
+            name: 'Solid Car App',
+            issuer: 'Solid Car'
+        });
+
+        // Save the secret to the user
+        user.twoFactorSecret = secret.base32;
+        await user.save();
+
+        // Generate QR code URL
+        const qrCode = await QRCode.toDataURL(secret.otpauth_url);
+
+        return {
+            secret: secret.base32,
+            qrCode
+        };
+    }
+
+    /**
+     * Verify 2FA token
+     */
+    async verify2FA(userId, token) {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+        }
+
+        if (!user.twoFactorSecret) {
+            throw new AppError('2FA not setup', 400, '2FA_NOT_SETUP');
+        }
+
+        const verified = speakeasy.totp.verify({
+            secret: user.twoFactorSecret,
+            encoding: 'base32',
+            token
+        });
+
+        if (!verified) {
+            throw new AppError('Invalid 2FA token', 401, 'INVALID_2FA_TOKEN');
+        }
+
+        // Mark 2FA as verified for this session
+        user.twoFactorVerified = true;
+        await user.save();
+
+        return true;
+    }
     /**
      * Register a new user
      */

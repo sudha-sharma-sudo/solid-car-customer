@@ -6,6 +6,38 @@ const { registerSchema, loginSchema, updateProfileSchema } = require('../middlew
 const auth = require('../middleware/auth');
 const { AppError } = require('../middleware/error');
 
+// 2FA Setup endpoint
+router.post('/2fa/setup', auth, async (req, res, next) => {
+    try {
+        const { secret, qrCode } = await userService.setup2FA(req.user.id);
+        res.json({
+            status: 'success',
+            data: { secret, qrCode }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// 2FA Verify endpoint
+router.post('/2fa/verify', auth, async (req, res, next) => {
+    try {
+        const { token } = req.body;
+        const verified = await userService.verify2FA(req.user.id, token);
+        
+        if (!verified) {
+            throw new AppError('Invalid 2FA token', 401, 'INVALID_2FA_TOKEN');
+        }
+
+        res.json({
+            status: 'success',
+            message: '2FA verified successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Register endpoint
 router.post('/register', validateJoi(registerSchema), async (req, res, next) => {
     try {

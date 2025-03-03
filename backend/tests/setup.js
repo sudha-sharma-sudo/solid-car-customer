@@ -12,7 +12,33 @@ process.env.JWT_SECRET = 'test-secret';
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri, config.database.options);
+  
+  // Override the MONGODB_URI for tests
+  process.env.MONGODB_URI = mongoUri;
+  
+  // Disconnect any existing connection
+  await mongoose.disconnect();
+
+  // Initialize database connection with test-specific options
+  await mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    auth: undefined,
+    authSource: undefined,
+    user: undefined,
+    pass: undefined
+  });
+
+  // Verify connection
+  if (!mongoose.connection.db) {
+    throw new Error('Failed to establish database connection');
+  }
+
+  // Clear any existing data
+  const collections = mongoose.connection.collections;
+  for (const key in collections) {
+    await collections[key].deleteMany({});
+  }
 });
 
 // Clear database between tests

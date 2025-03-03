@@ -76,6 +76,14 @@ const userSchema = new mongoose.Schema({
             type: Boolean,
             default: true
         }
+    },
+    twoFactorSecret: {
+        type: String,
+        select: false
+    },
+    twoFactorVerified: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

@@ -3,21 +3,33 @@ const { logger } = require('../middleware/error');
 
 const connectDB = async () => {
     try {
-        const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/solid-car';
-        
+        // Skip authentication for test environment
         const options = {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             autoIndex: true,
-            serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-            socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-            family: 4, // Use IPv4, skip trying IPv6
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+            family: 4,
             serverApi: {
                 version: '1',
                 strict: true,
                 deprecationErrors: true,
             }
         };
+
+        // Use in-memory database for tests without authentication
+        const mongoURI = process.env.NODE_ENV === 'test' 
+            ? process.env.MONGODB_URI
+            : process.env.MONGODB_URI || 'mongodb://localhost:27017/solid-car';
+
+        // Remove all authentication options for test environment
+        if (process.env.NODE_ENV === 'test') {
+            delete options.auth;
+            delete options.authSource;
+            delete options.user;
+            delete options.pass;
+        }
 
         // Connect to MongoDB
         const conn = await mongoose.connect(mongoURI, options);
@@ -51,8 +63,11 @@ const connectDB = async () => {
 
     } catch (error) {
         logger.error('MongoDB connection error:', error);
-        // Exit process with failure
-        process.exit(1);
+        // Only exit process in non-test environments
+        if (process.env.NODE_ENV !== 'test') {
+            process.exit(1);
+        }
+        throw error; // Re-throw error for test environment
     }
 };
 
