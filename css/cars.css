@@ -1,0 +1,194 @@
+/* Car Listings Styles */
+.car-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.car-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.car-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+}
+
+.car-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.car-card:hover .car-image-wrapper img {
+    transform: scale(1.05);
+}
+
+.car-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.car-card:hover .car-overlay {
+    opacity: 1;
+}
+
+.car-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.car-feature {
+    font-size: 0.875rem;
+    padding: 4px 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    color: #6c757d;
+    cursor: help;
+}
+
+/* List View Styles */
+.list-view .col-md-4 {
+    width: 100%;
+}
+
+.list-view .car-card {
+    display: flex;
+    flex-direction: row;
+}
+
+.list-view .car-image-wrapper {
+    width: 300px;
+    height: 100%;
+}
+
+.list-view .card-body {
+    flex: 1;
+}
+
+/* Filter Section Styles */
+.filter-section {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.filter-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 1rem;
+}
+
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background: #e9ecef;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    color: #495057;
+}
+
+.filter-tag .remove-filter {
+    margin-left: 6px;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.filter-tag .remove-filter:hover {
+    opacity: 1;
+}
+
+/* Favorite Button Styles */
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    z-index: 1;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+}
+
+.favorite-btn i {
+    color: #dc3545;
+    font-size: 1.2rem;
+}
+
+/* Sort Options Styles */
+.sort-options {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sort-label {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .list-view .car-card {
+        flex-direction: column;
+    }
+
+    .list-view .car-image-wrapper {
+        width: 100%;
+    }
+
+    .sort-options {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

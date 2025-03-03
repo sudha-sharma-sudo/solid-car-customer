@@ -1,0 +1,20 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+    <!-- Purple gradient background -->
+    <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6f42c1;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#5a32a3;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="800" height="400" fill="url(#grad)"/>
+    
+    <!-- Car silhouette -->
+    <path d="M 300 300 L 700 300 C 750 300 750 250 700 250 L 650 200 C 550 150 450 150 350 200 L 250 200 C 200 200 200 250 300 300 Z" 
+          fill="white"/>
+    
+    <!-- Wheels -->
+    <circle cx="350" cy="300" r="40" fill="#333"/>
+    <circle cx="650" cy="300" r="40" fill="#333"/>
+</svg>

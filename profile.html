@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Solid Car</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-car"></i> Solid Car
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cars.html">Cars</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="profile.html">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5">
+        <div class="row">
+            <!-- Profile Sidebar -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <img src="https://via.placeholder.com/150" alt="Profile Picture" class="rounded-circle img-fluid">
+                        </div>
+                        <h5 class="card-title mb-0" id="profileName">John Smith</h5>
+                        <p class="text-muted">Member since March 2024</p>
+                        <div class="d-grid">
+                            <button class="btn btn-outline-primary mb-2" onclick="document.getElementById('profilePicInput').click()">
+                                Change Picture
+                            </button>
+                            <input type="file" id="profilePicInput" hidden accept="image/*">
+                        </div>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Reward Points
+                            <span class="badge bg-primary rounded-pill">750</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Total Trips
+                            <span class="badge bg-primary rounded-pill">17</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Member Level
+                            <span class="badge bg-gold">Gold</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Membership Card -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Membership Card</h5>
+                        <div class="card membership-card bg-gradient text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-1">Gold Member</h6>
+                                        <small>Valid until Mar 2025</small>
+                                    </div>
+                                    <i class="fas fa-car fa-2x"></i>
+                                </div>
+                                <div class="mt-3">
+                                    <h5 class="mb-0" id="membershipName">John Smith</h5>
+                                    <small>Member ID: #123456</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Settings -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Profile Settings</h4>
+                        <form id="profileForm" onsubmit="return updateProfile(event)">
+                            <!-- Personal Information -->
+                            <h5 class="mb-3">Personal Information</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="fullName" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="fullName" value="John Smith" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" value="john.smith@example.com" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="phone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phone" value="+1-555-123-4567" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                        <input type="date" class="form-control" id="dateOfBirth" value="1990-01-01">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address -->
+                            <h5 class="mb-3">Address</h5>
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="street" class="form-label">Street Address</label>
+                                        <input type="text" class="form-control" id="street" value="123 Main St">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="city" class="form-label">City</label>
+                                        <input type="text" class="form-control" id="city" value="New York">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="state" class="form-label">State</label>
+                                        <input type="text" class="form-control" id="state" value="NY">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="zipCode" class="form-label">ZIP Code</label>
+                                        <input type="text" class="form-control" id="zipCode" value="10001">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Preferences -->
+                            <h5 class="mb-3">Preferences</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="preferredLocation" class="form-label">Preferred Pickup Location</label>
+                                        <select class="form-select" id="preferredLocation">
+                                            <option value="airport">Airport Terminal</option>
+                                            <option value="downtown" selected>Downtown Office</option>
+                                            <option value="mall">Shopping Mall</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="language" class="form-label">Preferred Language</label>
+                                        <select class="form-select" id="language">
+                                            <option value="en" selected>English</option>
+                                            <option value="es">Spanish</option>
+                                            <option value="fr">French</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                        <label class="form-check-label" for="emailNotifications">
+                                            Receive email notifications about promotions and offers
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="smsNotifications" checked>
+                                        <label class="form-check-label" for="smsNotifications">
+                                            Receive SMS notifications about bookings and updates
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Password Change -->
+                            <h5 class="mb-3">Change Password</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="currentPassword" class="form-label">Current Password</label>
+                                        <input type="password" class="form-control" id="currentPassword">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="newPassword" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" id="newPassword">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <button type="button" class="btn btn-outline-danger" onclick="deactivateAccount()">Deactivate Account</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-kit-code.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        function updateProfile(event) {
+            event.preventDefault();
+            // In a real app, this would send the form data to an API
+            alert('Profile updated successfully!');
+            return false;
+        }
+
+        function deactivateAccount() {
+            if (confirm('Are you sure you want to deactivate your account? This action cannot be undone.')) {
+                // In a real app, this would send a request to deactivate the account
+                alert('Account deactivation request submitted.');
+            }
+        }
+
+        // Handle profile picture change
+        document.getElementById('profilePicInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.querySelector('.rounded-circle').src = e.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    </script>
+</body>
+</html>
