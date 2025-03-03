@@ -4,163 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Solid Car</title>
-    <!-- Add Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Add Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Notyf for notifications -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-    <!-- Custom styles -->
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .demo-button {
-            background-color: #28a745;
-            color: white;
-            padding: 15px;
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .demo-button:hover {
-            background-color: #218838;
-            transform: translateY(-2px);
-        }
-        .demo-alert {
-            border-left: 4px solid #28a745;
-        }
-    </style>
+    <!-- MDB CSS -->
+    <link href="vendor/mdb-ui-kit/css/mdb.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="/">
                 <img src="images/logo.png" alt="Solid Car Logo" height="30">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNav">
+                <i class="fas fa-bars"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="cars.html">Cars</a>
+                        <a class="nav-link" href="/cars.html">Cars</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register.html">Register</a>
                     </li>
                 </ul>
-                <div class="d-flex" id="userNav">
-                    <!-- User navigation will be inserted here by JavaScript -->
-                </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="container mt-5 pt-5">
+    <div class="container my-5">
         <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <!-- Demo Notice -->
-                <div class="alert alert-info demo-alert shadow-sm mb-4" role="alert">
-                    <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Try our Demo!</h5>
-                    <p class="mb-0">Experience all features instantly with our demo account.</p>
+            <div class="col-md-6 col-lg-5">
+                <!-- Demo Info -->
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Try our Demo!
+                    <p class="mb-0 mt-2">Experience all features instantly with our demo account.</p>
                 </div>
 
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h2 class="card-title text-center mb-4">Login</h2>
-                        
-                        <!-- Demo Login Button -->
-                        <button type="button" id="demoLoginBtn" class="btn w-100 demo-button shadow-sm">
+                <!-- Login Card -->
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Login</h2>
+
+                        <!-- Quick Demo Login -->
+                        <button class="btn btn-success w-100 mb-4 demo-login-btn">
                             <i class="fas fa-rocket me-2"></i>Quick Demo Login
                         </button>
 
-                        <div class="text-center text-muted mb-4">
-                            <small>- or use email and password -</small>
-                        </div>
+                        <div class="text-center text-muted mb-4">- or use email and password -</div>
 
+                        <!-- Login Form -->
                         <form id="loginForm">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email address</label>
-                                <input type="email" class="form-control" id="email" value="demo@example.com" required autocomplete="email">
+                            <!-- Email -->
+                            <div class="form-outline mb-4">
+                                <input type="email" id="email" class="form-control" required />
+                                <label class="form-label" for="email">Email address</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" value="demo123" required autocomplete="current-password">
+
+                            <!-- Password -->
+                            <div class="form-outline mb-4">
+                                <input type="password" id="password" class="form-control" required />
+                                <label class="form-label" for="password">Password</label>
                             </div>
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="rememberMe">
-                                <label class="form-check-label" for="rememberMe">Remember me</label>
+
+                            <!-- Remember me -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="remember" />
+                                <label class="form-check-label" for="remember">Remember me</label>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Login</button>
+
+                            <!-- Submit button -->
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
                         </form>
-                        <div class="text-center mt-3">
-                            <p class="mb-0">Don't have an account? <a href="register.html">Register here</a></p>
-                            <a href="#" class="text-decoration-none">Forgot password?</a>
-                        </div>
                     </div>
                 </div>
+
+                <!-- Additional Links -->
+                <div class="text-center mt-4">
+                    <a href="/register.html" class="text-primary">Create an account</a>
+                    <span class="mx-2">•</span>
+                    <a href="/forgot-password.html" class="text-primary">Forgot password?</a>
+                </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Footer -->
-    <footer class="bg-light mt-5 py-3">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>About Solid Car</h5>
-                    <p>Premium car rental service providing luxury and comfort.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="cars.html">Cars</a></li>
-                        <li><a href="booking.html">Bookings</a></li>
-                        <li><a href="support.html">Support</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Contact</h5>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-phone"></i> +1 234 567 890</li>
-                        <li><i class="fas fa-envelope"></i> info@solidcar.com</li>
-                    </ul>
-                </div>
-            </div>
-            <hr>
-            <div class="text-center">
-                <p>&copy; 2024 Solid Car. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Notyf for notifications -->
-    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-    <!-- App Scripts -->
+    <!-- MDB JavaScript -->
+    <script type="text/javascript" src="vendor/mdb-ui-kit/js/mdb.min.js"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <!-- Custom JavaScript -->
+    <script src="js/utils.js"></script>
     <script src="js/app.js"></script>
-    <script>
-        // Debug logging
-        console.log('Page loaded');
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded');
-            const demoBtn = document.getElementById('demoLoginBtn');
-            if (demoBtn) {
-                console.log('Demo button found');
-                demoBtn.addEventListener('click', () => {
-                    console.log('Demo button clicked');
-                    if (window.app && window.app.mockLogin) {
-                        console.log('Attempting mock login');
-                        window.app.mockLogin('demo@example.com', 'demo123')
-                            .catch(error => console.error('Mock login error:', error));
-                    } else {
-                        console.error('Mock login function not found');
-                    }
-                });
-            } else {
-                console.error('Demo button not found');
-            }
-        });
-    </script>
     <script src="js/auth.js"></script>
 </body>
 </html>

@@ -1,0 +1,19 @@
+{
+  "name": "solid-car-app",
+  "version": "1.0.0",
+  "description": "Solid Car Rental Application",
+  "main": "index.js",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "jest"
+  },
+  "dependencies": {
+    "mdb-ui-kit": "^6.4.0",
+    "@popperjs/core": "^2.11.8",
+    "notyf": "^3.10.0"
+  },
+  "devDependencies": {
+    "jest": "^29.6.0",
+    "jest-environment-jsdom": "^29.6.0"
+  }
+}

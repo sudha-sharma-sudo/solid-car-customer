@@ -1,70 +1,117 @@
-// Handle login form submission and demo login
-document.addEventListener('DOMContentLoaded', () => {
-    // Debug logging
-    console.log('[DEBUG] Auth.js loaded');
-    
-    // Handle login form submission
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        console.log('[DEBUG] Login form found');
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            console.log('[DEBUG] Login form submitted');
-            
-            try {
-                const formData = {
-                    email: document.getElementById('email').value,
-                    password: document.getElementById('password').value
-                };
-                
-                // For demo purposes, check if credentials match demo account
-                if (formData.email === 'demo@example.com' && formData.password === 'demo123') {
-                    console.log('[DEBUG] Demo credentials matched');
-                    await window.app.mockLogin(formData.email, formData.password);
-                } else {
-                    throw new Error('Invalid credentials. Use demo@example.com / demo123');
-                }
-                
-            } catch (error) {
-                console.error('[DEBUG] Login error:', error);
-                window.app.notyf.error(error.message || 'Login failed');
+class Auth {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        utils.debug('Auth.js loaded');
+        this.initializeLoginForm();
+        this.initializeDemoLogin();
+    }
+
+    initializeLoginForm() {
+        const form = document.getElementById('loginForm');
+        if (form) {
+            utils.debug('Login form found');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleLogin(form);
+            });
+        }
+    }
+
+    initializeDemoLogin() {
+        const demoButton = document.querySelector('.demo-login-btn');
+        if (demoButton) {
+            utils.debug('Demo login button found');
+            demoButton.addEventListener('click', () => {
+                utils.debug('Demo button clicked');
+                this.handleDemoLogin();
+            });
+        } else {
+            utils.debug('Demo login button not found');
+        }
+    }
+
+    async handleLogin(form) {
+        const email = form.querySelector('#email').value;
+        const password = form.querySelector('#password').value;
+
+        try {
+            // Simulated API call - replace with actual API call
+            const response = await this.loginApi(email, password);
+            if (response.success) {
+                window.app.setAuthData(response.token, response.user);
+                this.redirectAfterLogin();
+            } else {
+                window.app.showError(response.message || 'Login failed');
             }
+        } catch (error) {
+            window.app.showError('An error occurred during login');
+            utils.debug('Login error:', error);
+        }
+    }
+
+    async handleDemoLogin() {
+        utils.debug('Attempting mock login');
+        try {
+            const mockResponse = {
+                success: true,
+                token: 'demo-token-123',
+                user: {
+                    id: 1,
+                    name: 'Demo User',
+                    email: 'demo@example.com'
+                }
+            };
+
+            utils.debug('Starting mock login');
+            window.app.setAuthData(mockResponse.token, mockResponse.user);
+            this.redirectAfterLogin();
+            utils.debug('Mock login successful, setting auth data');
+        } catch (error) {
+            window.app.showError('Demo login failed');
+            utils.debug('Demo login error:', error);
+        }
+    }
+
+    async loginApi(email, password) {
+        // Simulated API call - replace with actual API endpoint
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({
+                    success: true,
+                    token: 'test-token-123',
+                    user: {
+                        id: 1,
+                        name: 'Test User',
+                        email: email
+                    }
+                });
+            }, 500);
         });
     }
 
-    // Handle demo login button
-    const demoLoginBtn = document.getElementById('demoLoginBtn');
-    if (demoLoginBtn) {
-        console.log('[DEBUG] Demo login button found');
-        demoLoginBtn.addEventListener('click', async () => {
-            console.log('[DEBUG] Demo login button clicked');
-            try {
-                // Get the intended URL before login
-                const intendedUrl = sessionStorage.getItem('intendedUrl');
-                console.log('[DEBUG] Intended URL:', intendedUrl);
-                
-                await window.app.mockLogin('demo@example.com', 'demo123');
-                
-                // After successful login, redirect to intended URL or cars page
-                if (intendedUrl) {
-                    console.log('[DEBUG] Redirecting to intended URL:', intendedUrl);
-                    window.location.href = intendedUrl;
-                } else {
-                    console.log('[DEBUG] No intended URL, redirecting to cars.html');
-                    window.location.href = 'cars.html';
-                }
-            } catch (error) {
-                console.error('[DEBUG] Demo login error:', error);
-                window.app.notyf.error('Demo login failed');
-            }
-        });
-    } else {
-        console.log('[DEBUG] Demo login button not found');
+    redirectAfterLogin() {
+        const intendedUrl = localStorage.getItem('intended_url');
+        utils.debug('Intended URL:', intendedUrl);
+        
+        if (intendedUrl) {
+            localStorage.removeItem('intended_url');
+            window.location.href = intendedUrl;
+        } else {
+            window.location.href = '/';
+        }
     }
-});
 
-// Store intended URL when redirecting to login
-if (!window.app?.isAuthenticated() && !window.location.pathname.includes('login.html')) {
-    console.log('[DEBUG] Storing intended URL:', window.location.href);
-    sessionStorage.setItem('intendedUrl', window.location.href);
+    logout() {
+        window.app.clearAuthData();
+        window.location.href = '/login.html';
+    }
 }
+
+// Initialize auth when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    utils.debug('DOM loaded');
+    new Auth();
+});
