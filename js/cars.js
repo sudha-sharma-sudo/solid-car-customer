@@ -1,282 +1,373 @@
-// Mock car data
-const MOCK_CARS = {
-    'tesla-model-3': {
-        id: 'tesla-model-3',
-        title: 'Tesla Model 3',
-        description: 'Experience the future of driving with the Tesla Model 3. This all-electric sedan combines luxury, performance, and cutting-edge technology. With its sleek design and impressive range, it\'s perfect for both daily commutes and long journeys.',
-        type: 'Electric Sedan',
-        fuelType: 'Electric',
-        transmission: 'Automatic',
-        mileage: '358 miles range',
-        seats: '5 seats',
-        luggage: '23 cu ft',
-        price: 89,
-        images: ['images/car-hero.svg'],
-        videoTour: null // Example URL: 'https://example.com/videos/tesla-model-3-tour.mp4'
-    },
-    'bmw-330i': {
-        id: 'bmw-330i',
-        title: 'BMW 330i',
-        description: 'The BMW 330i delivers the perfect blend of luxury, performance, and driving dynamics. With its powerful engine, premium interior, and advanced technology features, it offers an exceptional driving experience.',
-        type: 'Luxury Sedan',
-        fuelType: 'Gasoline',
-        transmission: 'Automatic 8-speed',
-        mileage: '26/36 mpg',
-        seats: '5 seats',
-        luggage: '17 cu ft',
-        price: 79,
-        images: ['images/car-hero.svg'],
-        videoTour: null
-    }
-};
-
-// Initialize car-related functionality when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('[DEBUG] Cars.js loaded');
-    
-    // Handle car details page
-    if (window.location.pathname.includes('carDetails.html')) {
-        console.log('[DEBUG] On car details page, initializing...');
-        loadCarDetails();
-        initializeButtons();
-    }
-});
-
-// Initialize button handlers
-function initializeButtons() {
-    console.log('[DEBUG] Initializing button handlers');
-    
-    // Handle booking form submission
-    const bookingForm = document.getElementById('bookingForm');
-    if (bookingForm) {
-        console.log('[DEBUG] Found booking form, adding submit handler');
-        bookingForm.addEventListener('submit', handleBooking);
-    } else {
-        console.log('[DEBUG] Booking form not found');
-    }
-    
-    // Handle favorite button
-    const favoriteBtn = document.getElementById('favoriteBtn');
-    if (favoriteBtn) {
-        console.log('[DEBUG] Found favorite button, adding click handler');
-        favoriteBtn.addEventListener('click', handleFavorite);
-    } else {
-        console.log('[DEBUG] Favorite button not found');
-    }
-    
-    // Handle share button
-    const shareBtn = document.getElementById('shareBtn');
-    if (shareBtn) {
-        console.log('[DEBUG] Found share button, adding click handler');
-        shareBtn.addEventListener('click', handleShare);
-    } else {
-        console.log('[DEBUG] Share button not found');
-    }
-}
-
-// Load car details based on URL parameter
-function loadCarDetails() {
-    console.log('[DEBUG] Loading car details');
-    
-    // Get car ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const carId = urlParams.get('id');
-    console.log('[DEBUG] Car ID from URL:', carId);
-    
-    if (!carId) {
-        console.error('[DEBUG] Car ID not found in URL');
-        window.app.notyf.error('Car ID not found');
-        return;
-    }
-    
-    // Get car data
-    const car = MOCK_CARS[carId];
-    if (!car) {
-        console.error('[DEBUG] Car not found in mock data');
-        window.app.notyf.error('Car not found');
-        return;
-    }
-    
-    console.log('[DEBUG] Found car data:', car);
-    
-    try {
-        // Update page content
-        updatePageContent(car);
+class CarDetailsPage {
+    constructor() {
+        this.carId = null;
+        this.carData = null;
+        this.isLoading = true;
+        this.isFavorite = false;
+        this.reviews = [];
+        this.rating = 0;
         
-        // Set minimum dates for booking
-        setBookingDates();
-        
-        console.log('[DEBUG] Car details loaded successfully');
-    } catch (error) {
-        console.error('[DEBUG] Error loading car details:', error);
-        window.app.notyf.error('Error loading car details');
+        // Initialize page
+        this.init();
     }
-}
 
-// Update page content with car data
-function updatePageContent(car) {
-    console.log('[DEBUG] Updating page content');
-    
-    const elements = {
-        'carTitle': car.title,
-        'carDescription': car.description,
-        'carType': car.type,
-        'fuelType': car.fuelType,
-        'transmission': car.transmission,
-        'mileage': car.mileage,
-        'seats': car.seats,
-        'luggage': car.luggage,
-        'priceAmount': car.price
-    };
-    
-    // Update each element
-    for (const [id, value] of Object.entries(elements)) {
-        const element = document.getElementById(id);
-        if (element) {
-            element.textContent = value;
-        } else {
-            console.warn(`[DEBUG] Element not found: ${id}`);
+    async init() {
+        utils.debug('Cars.js loaded');
+        
+        // Check if we're on the car details page
+        if (window.location.pathname.includes('carDetails.html')) {
+            utils.debug('On car details page, initializing...');
+            this.initializeCarDetails();
         }
     }
-    
-    // Update gallery
-    const gallery = document.querySelector('.car-gallery img');
-    if (gallery && car.images.length > 0) {
-        gallery.src = car.images[0];
-        gallery.alt = car.title;
-    }
-    
-    // Handle video tour if available
-    const videoTourSection = document.getElementById('videoTourSection');
-    const videoPlayer = document.getElementById('videoPlayer');
-    if (videoTourSection && videoPlayer) {
-        if (car.videoTour) {
-            videoTourSection.classList.remove('d-none');
-            videoPlayer.src = car.videoTour;
-        } else {
-            videoTourSection.classList.add('d-none');
-        }
-    }
-}
 
-// Set minimum dates for booking
-function setBookingDates() {
-    console.log('[DEBUG] Setting booking dates');
-    
-    const today = new Date().toISOString().split('T')[0];
-    const pickupDate = document.getElementById('pickupDate');
-    const returnDate = document.getElementById('returnDate');
-    
-    if (pickupDate && returnDate) {
-        pickupDate.min = today;
-        returnDate.min = today;
-        console.log('[DEBUG] Booking dates set successfully');
-    } else {
-        console.warn('[DEBUG] Date inputs not found');
-    }
-}
+    async initializeCarDetails() {
+        // Get car ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        this.carId = urlParams.get('id');
+        utils.debug('Car ID from URL:', this.carId);
 
-// Handle booking form submission
-async function handleBooking(e) {
-    e.preventDefault();
-    console.log('[DEBUG] Handling booking submission');
-    
-    try {
-        const formData = {
-            pickupDate: document.getElementById('pickupDate').value,
-            returnDate: document.getElementById('returnDate').value,
-            location: document.getElementById('location').value
-        };
-        
-        console.log('[DEBUG] Form data:', formData);
-        
-        // Validate dates
-        const pickup = new Date(formData.pickupDate);
-        const returnDate = new Date(formData.returnDate);
-        
-        if (returnDate <= pickup) {
-            throw new Error('Return date must be after pickup date');
+        if (!this.carId) {
+            window.app.showError('No car ID provided');
+            return;
         }
-        
-        // For demo purposes, just show success message
-        window.app.notyf.success('Booking submitted successfully!');
-        console.log('[DEBUG] Booking submitted successfully');
-        
-    } catch (error) {
-        console.error('[DEBUG] Booking error:', error);
-        window.app.notyf.error(error.message || 'Failed to submit booking');
-    }
-}
 
-// Handle favorite button click
-function handleFavorite(e) {
-    console.log('[DEBUG] Handling favorite button click');
-    
-    try {
-        const btn = e.currentTarget;
-        const icon = btn.querySelector('i');
+        // Initialize components
+        this.initializeComponents();
         
-        if (!icon) {
-            throw new Error('Favorite icon not found');
-        }
+        // Load car data
+        await this.loadCarDetails();
         
-        if (icon.classList.contains('far')) {
-            icon.classList.replace('far', 'fas');
-            btn.innerHTML = '<i class="fas fa-heart"></i> Remove from Favorites';
-            window.app.notyf.success('Added to favorites');
-            console.log('[DEBUG] Added to favorites');
-        } else {
-            icon.classList.replace('fas', 'far');
-            btn.innerHTML = '<i class="far fa-heart"></i> Add to Favorites';
-            window.app.notyf.success('Removed from favorites');
-            console.log('[DEBUG] Removed from favorites');
-        }
-    } catch (error) {
-        console.error('[DEBUG] Favorite error:', error);
-        window.app.notyf.error('Failed to update favorites');
+        // Initialize event handlers
+        this.initializeEventHandlers();
+        
+        utils.debug('Car details initialized');
     }
-}
 
-// Handle share button click
-function handleShare() {
-    console.log('[DEBUG] Handling share button click');
-    
-    try {
-        const title = document.getElementById('carTitle')?.textContent || 'Car Details';
-        const description = document.getElementById('carDescription')?.textContent || '';
-        const url = window.location.href;
-        
-        // Check if Web Share API is available
-        if (navigator.share) {
-            console.log('[DEBUG] Using Web Share API');
-            navigator.share({
-                title: title,
-                text: description,
-                url: url
-            })
-            .then(() => {
-                console.log('[DEBUG] Shared successfully');
-                window.app.notyf.success('Shared successfully');
-            })
-            .catch((error) => {
-                console.error('[DEBUG] Share error:', error);
-                throw error;
-            });
-        } else {
-            // Fallback - copy URL to clipboard
-            console.log('[DEBUG] Web Share API not available, copying to clipboard');
-            navigator.clipboard.writeText(url)
-                .then(() => {
-                    console.log('[DEBUG] Copied to clipboard');
-                    window.app.notyf.success('Link copied to clipboard');
-                })
-                .catch((error) => {
-                    console.error('[DEBUG] Clipboard error:', error);
-                    throw error;
+    initializeFormComponents() {
+        try {
+            // Initialize MDB form outlines if MDB is available
+            if (typeof mdb !== 'undefined' && mdb.Input) {
+                document.querySelectorAll('.form-outline').forEach((formOutline) => {
+                    new mdb.Input(formOutline).init();
                 });
+            }
+        } catch (error) {
+            utils.debug('Error initializing MDB components:', error);
         }
-    } catch (error) {
-        console.error('[DEBUG] Share error:', error);
-        window.app.notyf.error('Failed to share');
+    }
+
+    initializeComponents() {
+        // Initialize form components
+        this.initializeFormComponents();
+
+        // Initialize datepickers with validation
+        this.initializeDatePickers();
+        
+        // Initialize dropdowns
+        this.initializeDropdowns();
+        
+        // Initialize rating stars
+        this.initializeRatingStars();
+    }
+
+    initializeDatePickers() {
+        // Get today's date at midnight UTC
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const maxDate = new Date(today);
+        maxDate.setMonth(maxDate.getMonth() + 3);
+
+        // Format dates in YYYY-MM-DD format
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        // Set min/max dates for pickup
+        const pickupDate = document.getElementById('pickupDate');
+        pickupDate.min = formatDate(today);
+        pickupDate.max = formatDate(maxDate);
+        pickupDate.value = formatDate(today); // Set default to today
+
+        // Set min/max dates for return
+        const returnDate = document.getElementById('returnDate');
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        returnDate.min = formatDate(tomorrow);
+        returnDate.max = formatDate(maxDate);
+        returnDate.value = formatDate(tomorrow); // Set default to tomorrow
+
+        utils.debug('Setting booking dates');
+        
+        // Add event listeners for date validation
+        pickupDate.addEventListener('change', () => this.validateDates());
+        returnDate.addEventListener('change', () => this.validateDates());
+        
+        utils.debug('Booking dates set successfully');
+    }
+
+    validateDates() {
+        const pickupInput = document.getElementById('pickupDate');
+        const returnInput = document.getElementById('returnDate');
+        const pickupDate = new Date(pickupInput.value);
+        const returnDate = new Date(returnInput.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Validate pickup date
+        if (pickupDate < today) {
+            pickupInput.setCustomValidity('Pickup date cannot be in the past');
+        } else {
+            pickupInput.setCustomValidity('');
+        }
+        
+        // Validate return date
+        if (returnDate <= pickupDate) {
+            returnInput.setCustomValidity('Return date must be after pickup date');
+        } else {
+            returnInput.setCustomValidity('');
+        }
+
+        // Report validity to show validation messages
+        pickupInput.reportValidity();
+        returnInput.reportValidity();
+    }
+
+    initializeDropdowns() {
+        const locationSelect = document.getElementById('pickupLocation');
+        if (locationSelect) {
+            locationSelect.addEventListener('change', (e) => {
+                const selectedValue = e.target.value;
+                utils.debug('Location selected:', selectedValue);
+                
+                // Clear any previous validation messages
+                locationSelect.setCustomValidity('');
+                
+                if (!selectedValue) {
+                    locationSelect.setCustomValidity('Please select a pickup location');
+                }
+                
+                locationSelect.reportValidity();
+            });
+        }
+    }
+
+    initializeRatingStars() {
+        const stars = document.querySelectorAll('.rating-stars i');
+        stars.forEach(star => {
+            star.addEventListener('click', (e) => {
+                const rating = parseInt(e.target.dataset.rating);
+                this.setRating(rating);
+            });
+
+            star.addEventListener('mouseover', (e) => {
+                const rating = parseInt(e.target.dataset.rating);
+                this.highlightStars(rating);
+            });
+        });
+
+        document.querySelector('.rating-stars').addEventListener('mouseleave', () => {
+            this.highlightStars(this.rating);
+        });
+    }
+
+    setRating(rating) {
+        this.rating = rating;
+        document.getElementById('ratingInput').value = rating;
+        this.highlightStars(rating);
+    }
+
+    highlightStars(rating) {
+        const stars = document.querySelectorAll('.rating-stars i');
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('far');
+                star.classList.add('fas');
+            } else {
+                star.classList.remove('fas');
+                star.classList.add('far');
+            }
+        });
+    }
+
+    async loadCarDetails() {
+        utils.debug('Loading car details');
+        try {
+            // Simulated API call - replace with actual API call
+            this.carData = {
+                id: this.carId,
+                title: 'Tesla Model 3',
+                description: 'Experience the future of driving with this all-electric sedan. The Tesla Model 3 combines cutting-edge technology with exceptional performance and range.',
+                price: 89,
+                specifications: {
+                    type: 'Electric Sedan',
+                    fuel: 'Electric',
+                    transmission: 'Automatic',
+                    seats: '5 seats',
+                    range: '358 miles range',
+                    cargo: '23 cu ft'
+                }
+            };
+
+            this.updatePageContent();
+            utils.debug('Car details loaded successfully');
+        } catch (error) {
+            utils.debug('Error loading car details:', error);
+            window.app.showError('Failed to load car details');
+        }
+    }
+
+    updatePageContent() {
+        if (!this.carData) return;
+
+        // Update basic information
+        document.getElementById('carTitle').textContent = this.carData.title;
+        document.getElementById('carDescription').textContent = this.carData.description;
+        document.getElementById('priceAmount').textContent = `$${this.carData.price}`;
+
+        // Update specifications
+        document.getElementById('carType').textContent = this.carData.specifications.type;
+        document.getElementById('fuelType').textContent = this.carData.specifications.fuel;
+        document.getElementById('transmission').textContent = this.carData.specifications.transmission;
+        document.getElementById('seats').textContent = this.carData.specifications.seats;
+
+        utils.debug('Updating page content');
+    }
+
+    initializeEventHandlers() {
+        // Booking form submission
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleBooking();
+        });
+
+        // Favorite button
+        document.getElementById('favoriteBtn').addEventListener('click', () => {
+            utils.debug('Handling favorite button click');
+            this.toggleFavorite();
+        });
+
+        // Share button
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            utils.debug('Handling share button click');
+            this.handleShare();
+        });
+
+        // Review form
+        document.getElementById('reviewForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleReviewSubmission();
+        });
+
+        utils.debug('Initializing button handlers');
+        utils.debug('Found booking form, adding submit handler');
+        utils.debug('Found favorite button, adding click handler');
+        utils.debug('Found share button, adding click handler');
+    }
+
+    async handleBooking() {
+        const pickupDate = document.getElementById('pickupDate').value;
+        const returnDate = document.getElementById('returnDate').value;
+        const location = document.getElementById('pickupLocation').value;
+
+        if (!pickupDate || !returnDate || !location) {
+            window.app.showError('Please fill in all booking details');
+            return;
+        }
+
+        try {
+            // Simulated booking API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            window.app.showSuccess('Booking successful! Check your email for confirmation.');
+        } catch (error) {
+            window.app.showError('Failed to process booking');
+        }
+    }
+
+    async toggleFavorite() {
+        try {
+            this.isFavorite = !this.isFavorite;
+            const btn = document.getElementById('favoriteBtn');
+            
+            if (this.isFavorite) {
+                btn.innerHTML = '<i class="fas fa-heart me-2"></i>Remove from Favorites';
+                window.app.showSuccess('Added to favorites');
+                utils.debug('Added to favorites');
+            } else {
+                btn.innerHTML = '<i class="far fa-heart me-2"></i>Add to Favorites';
+                window.app.showSuccess('Removed from favorites');
+                utils.debug('Removed from favorites');
+            }
+        } catch (error) {
+            window.app.showError('Failed to update favorites');
+        }
+    }
+
+    async handleShare() {
+        const shareUrl = window.location.href;
+        
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: this.carData.title,
+                    text: this.carData.description,
+                    url: shareUrl
+                });
+                utils.debug('Shared successfully');
+            } catch (error) {
+                utils.debug('Web Share API not available, copying to clipboard');
+                this.copyToClipboard(shareUrl);
+            }
+        } else {
+            utils.debug('Web Share API not available, copying to clipboard');
+            this.copyToClipboard(shareUrl);
+        }
+    }
+
+    async copyToClipboard(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            window.app.showSuccess('Link copied to clipboard');
+            utils.debug('Copied to clipboard');
+        } catch (error) {
+            window.app.showError('Failed to copy link');
+        }
+    }
+
+    async handleReviewSubmission() {
+        const rating = document.getElementById('ratingInput').value;
+        const text = document.getElementById('reviewText').value;
+
+        if (!rating || !text) {
+            window.app.showError('Please provide both rating and review text');
+            return;
+        }
+
+        try {
+            // Simulated API call to submit review
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Close modal
+            const modal = mdb.Modal.getInstance(document.getElementById('addReviewModal'));
+            modal.hide();
+            
+            window.app.showSuccess('Review submitted successfully');
+            
+            // Reset form
+            document.getElementById('reviewForm').reset();
+            this.setRating(0);
+        } catch (error) {
+            window.app.showError('Failed to submit review');
+        }
     }
 }
+
+// Initialize car details page
+document.addEventListener('DOMContentLoaded', () => {
+    utils.debug('DOM loaded');
+    new CarDetailsPage();
+});

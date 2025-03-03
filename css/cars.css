@@ -1,222 +1,265 @@
 /* Car Details Page Styles */
-
-/* Gallery Styles */
-#carMediaGallery {
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.car-placeholder {
+    background-color: var(--primary-color);
+    min-height: 300px;
 }
 
-#carMediaGallery .carousel-item {
-    height: 400px;
-    background-color: #f8f9fa;
-}
-
-#carMediaGallery .carousel-item img {
-    object-fit: cover;
-    height: 100%;
-    width: 100%;
-}
-
-#carMediaGallery .carousel-control-prev,
-#carMediaGallery .carousel-control-next {
-    width: 5%;
-    background: rgba(0, 0, 0, 0.3);
-}
-
-/* Video Tour Styles */
-#videoTourSection {
-    border-radius: 8px;
+.carousel {
+    border-radius: var(--border-radius);
     overflow: hidden;
 }
 
-#videoPlayer {
-    width: 100%;
-    border-radius: 4px;
-    background-color: #000;
-}
-
-/* Specifications Styles */
-#specifications .col-md-6 {
-    padding: 8px 16px;
-    border-bottom: 1px solid #eee;
-}
-
-#specifications .text-muted {
-    font-size: 0.9rem;
-}
-
-/* Features Styles */
-#features .col-md-6 {
-    padding: 8px 16px;
-}
-
-#features .fa-check {
-    color: #28a745;
-}
-
-/* Additional Features Styles */
-#features .col-12 h6 {
-    color: #333;
-    margin-bottom: 4px;
-}
-
-#features .col-12 .small {
-    color: #6c757d;
-}
-
-/* Booking Form Styles */
-#bookingForm {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-#bookingForm .form-label {
-    font-weight: 500;
-    color: #495057;
-}
-
-#bookingForm .form-control {
-    border-radius: 4px;
-    border: 1px solid #ced4da;
-    padding: 8px 12px;
-}
-
-#bookingForm .form-control:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-/* Card Styles */
-.card {
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-}
-
-.card-title {
-    color: #333;
-    font-weight: 600;
-}
-
-/* Badge Styles */
-.badge {
-    padding: 8px 16px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Price Display */
-#carPrice {
-    color: #28a745;
-    font-weight: 600;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    #carMediaGallery .carousel-item {
-        height: 300px;
-    }
-
-    .sticky-top {
-        position: relative !important;
-        top: 0 !important;
-    }
-
-    #specifications .col-md-6,
-    #features .col-md-6 {
-        border-bottom: 1px solid #eee;
-    }
-}
-
-/* Animation Effects */
 .carousel-item {
-    transition: transform 0.6s ease-in-out;
+    background-color: var(--light-gray);
 }
 
-.card {
-    animation: fadeIn 0.5s ease-in;
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.carousel:hover .carousel-control-prev,
+.carousel:hover .carousel-control-next {
+    opacity: 1;
 }
 
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-    body.dark-mode {
-        background-color: #1a1a1a;
-        color: #fff;
-    }
+/* Specifications Section */
+.spec-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+}
 
-    .dark-mode .card {
-        background-color: #2d2d2d;
-        border-color: #404040;
-    }
+.spec-item i {
+    font-size: 1.5rem;
+    width: 24px;
+    text-align: center;
+}
 
-    .dark-mode .card-title {
-        color: #fff;
-    }
+/* Booking Card */
+.booking-card {
+    position: sticky;
+    top: 2rem;
+}
 
-    .dark-mode #specifications .col-md-6,
-    .dark-mode #features .col-md-6 {
-        border-color: #404040;
-    }
+.price-tag {
+    text-align: center;
+    padding: 1rem;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+}
 
-    .dark-mode .text-muted {
-        color: #b0b0b0 !important;
-    }
+.price-tag .h2 {
+    color: var(--primary-color);
+    margin: 0;
+    font-weight: 600;
+}
 
-    .dark-mode #bookingForm {
-        background-color: #2d2d2d;
-    }
+/* Reviews Section */
+.review-item {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
 
-    .dark-mode .form-control {
-        background-color: #333;
-        border-color: #404040;
-        color: #fff;
-    }
+.review-item:last-child {
+    border-bottom: none;
+}
 
-    .dark-mode .form-control:focus {
-        border-color: #0066cc;
-        box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25);
-    }
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.review-rating {
+    color: #ffc107;
+}
+
+.review-author {
+    font-weight: 500;
+}
+
+.review-date {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.review-content {
+    color: #4a4a4a;
+    line-height: 1.5;
+}
+
+/* Share Modal */
+.share-url-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.share-url-container .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.share-url-container .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.social-share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.social-share-buttons .btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
 }
 
 /* Loading States */
-.loading {
-    position: relative;
-    min-height: 200px;
+.car-details-loading {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.loading::after {
+/* Form Validation Styles */
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.invalid-feedback {
+    display: none;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback,
+.form-control.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .booking-card {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .car-placeholder {
+        min-height: 200px;
+    }
+
+    .spec-item {
+        padding: 0.75rem;
+    }
+
+    .spec-item i {
+        font-size: 1.25rem;
+    }
+
+    .social-share-buttons {
+        flex-wrap: wrap;
+    }
+}
+
+/* Form Elements */
+select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    background-color: white;
+    font-size: 1rem;
+    color: #495057;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(74, 20, 140, 0.25);
+}
+
+select:hover {
+    border-color: #b3b3b3;
+}
+
+select:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+/* Style for the label */
+label[for="pickupLocation"] {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+/* Animation Effects */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Hover Effects */
+.btn-action {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-action::after {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 40px;
-    height: 40px;
-    margin: -20px 0 0 -20px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease-out, height 0.3s ease-out;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.btn-action:hover::after {
+    width: 200%;
+    height: 200%;
 }
