@@ -21,8 +21,4 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-// Export utilities
-window.utils = {
-    debug,
-    showToast
-};
+export { debug, showToast };
