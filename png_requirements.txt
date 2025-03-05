@@ -1,0 +1,26 @@
+# Required PNG Images for Solid Car Project
+
+## Car Thumbnails
+1. sedan.png
+2. suv.png
+3. luxury.png
+4. sports.png
+5. electric.png
+
+## Car Icons
+1. gps.png
+2. bluetooth.png
+3. sunroof.png
+4. premium_audio.png
+5. leather_seats.png
+6. autopilot.png
+
+## Brand Logos
+1. toyota.png
+2. bmw.png
+3. tesla.png
+4. audi.png
+5. mercedes.png
+6. honda.png
+7. ford.png
+8. nissan.png

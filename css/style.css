@@ -8,8 +8,17 @@
     --border-radius: 0.5rem;
 }
 
+@font-face {
+    font-family: 'Shine in Valentine';
+    src: url('../Shine in Valentine.ttf') format('truetype');
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Shine in Valentine', 'Roboto', sans-serif;
+}
+
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Shine in Valentine', 'Roboto', sans-serif;
     color: var(--text-color);
     background-color: var(--light-gray);
 }

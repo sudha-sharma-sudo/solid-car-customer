@@ -1,3 +1,5 @@
+import { debug, showToast } from './utils.js'; // Importing the utils module
+
 // Global App Class
 class App {
     constructor() {
