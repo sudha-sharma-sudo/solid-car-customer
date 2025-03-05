@@ -1,0 +1,18 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.*
+ 
+# Log files
+*.log
+
+# Coverage reports
+coverage/
+
+# Build artifacts
+dist/
+build/
+tmp/
+*.tmp
